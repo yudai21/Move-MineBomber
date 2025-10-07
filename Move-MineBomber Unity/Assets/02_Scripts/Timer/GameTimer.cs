@@ -8,6 +8,11 @@ public class GameTimer : MonoBehaviour
     private float elapsedTime = 0f;
     private bool isRunning = false;
 
+    void Start()
+    {
+        StartTimer(); // シーン開始時に自動で0からスタート
+    }
+
     void Update()
     {
         if (isRunning)
@@ -16,40 +21,35 @@ public class GameTimer : MonoBehaviour
 
             if (timerText != null)
             {
-                timerText.text = $"Time: {elapsedTime:F2} 秒";
-            }
+                int seconds = Mathf.FloorToInt(elapsedTime);
+                timerText.text = seconds.ToString();
+            }  
         }
     }
 
-    // 0から計測開始
     public void StartTimer()
     {
         elapsedTime = 0f;
         isRunning = true;
     }
 
-    // 停止
     public void StopTimer()
     {
         isRunning = false;
     }
 
-    // 一時停止
     public void PauseTimer()
     {
         isRunning = false;
     }
 
-    // 再開
     public void ResumeTimer()
     {
         isRunning = true;
     }
 
-    // 現在の時間を取得
     public float GetTime()
     {
         return elapsedTime;
     }
 }
-

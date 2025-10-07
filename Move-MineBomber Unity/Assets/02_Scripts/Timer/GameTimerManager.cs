@@ -19,11 +19,6 @@ public class GameTimerManager : MonoBehaviour
         }
     }
 
-    public void StartTimer()
-    {
-        gameTimer.StartTimer();
-    }
-
     public void StopTimer()
     {
         gameTimer.StopTimer();
