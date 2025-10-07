@@ -1124,7 +1124,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\u30B2\u30FC\u30E0\u30AF\u30EA\u30A2!!"
+  m_text: "\u30B2\u30FC\u30E0\u30AA\u30FC\u30D0\u30FC"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 7b2ab63872b3d0940a08e3183f028366, type: 2}
   m_sharedMaterial: {fileID: 5905715355141688017, guid: 7b2ab63872b3d0940a08e3183f028366, type: 2}
