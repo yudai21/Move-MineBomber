@@ -34,6 +34,7 @@ namespace Bomb.Boards
                 if (allMasses.Count == 0) break;
                 int index = RandomExtensions.Rand(0, allMasses.Count);
                 var m = allMasses[index];
+                m.type &= 0;
                 m.type |= MassType.Bomb;
                 board.SetMass(m.x, m.y, m);
                 allMasses.RemoveAt(index);

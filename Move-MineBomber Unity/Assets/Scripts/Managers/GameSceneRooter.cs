@@ -30,6 +30,10 @@ namespace Bomb.Managers
             _rule = rule;
         }
 
+        private void Update()
+        {
+            _viewer.BoardView();
+        }
 #if UNITY_EDITOR
         protected override void Awake()
         {
