@@ -22,11 +22,11 @@ public class PauseManager : MonoBehaviour
 
             if (!isActive)
             {
-                Debug.Log("•\Ž¦");
+                Debug.Log("Active");
             }
             else
             {
-                Debug.Log("”ñ•\Ž¦");
+                Debug.Log("NotActive");
             }
         });
     }
