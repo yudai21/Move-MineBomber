@@ -3,6 +3,7 @@ using Bomb.Views;
 using UnityEngine;
 using HighElixir;
 using Bomb.Inputs;
+using HighElixir.Timers;
 
 namespace Bomb.Managers
 {
@@ -15,14 +16,15 @@ namespace Bomb.Managers
         private GameSceneManager _gameManager = new();
         private ViewObjRooter _viewObjRooter;
         private InputController _inputController;
+        private Timer _timer;
 #if UNITY_EDITOR
         [SerializeField]
 #endif
         private GameRule _rule;
-
         public ViewObjRooter View => _viewObjRooter;
         public InputController InputController => _inputController;
         public GameSceneManager Manager => _gameManager;
+        public Timer Timer => _timer;
         public void Invoke()
         {
             _gameManager.Invoke(_rule);
@@ -37,12 +39,15 @@ namespace Bomb.Managers
 
         private void Update()
         {
-            _viewObjRooter.Update(Time.deltaTime);
+            var dT = Time.deltaTime;
+            _viewObjRooter.Update(dT);
+            _timer.Update(dT);
         }
 #if UNITY_EDITOR
         protected override void Awake()
         {
             base.Awake();
+            _timer = new Timer(typeof(GameSceneRooter));
             _viewObjRooter = new(_viewer);
             _viewObjRooter.SetCamera(Camera.main);
             _viewObjRooter.SetCanvas(_canvas);

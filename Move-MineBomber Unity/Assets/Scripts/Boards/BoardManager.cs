@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEngine.Rendering.DebugUI.Table;
 
 namespace Bomb.Boards
 {
@@ -17,12 +18,45 @@ namespace Bomb.Boards
             {
                 if (_boardDirty)
                 {
-                    _currentBoardSize = GetMaxSpanOfOnes(_board);
+                    _currentBoardSize = GetMaxSpanOfOnes();
                 }
                 return _currentBoardSize;
             }
         }
+        public (int min, int max) GetBoardHeight(int x)
+        {
+            int rows = _board.GetLength(0);
+            int cols = _board.GetLength(1);
 
+            int first = -1, last = -1;
+            for (int i = 0; i < rows; i++)
+            {
+                if (!_board[i, x].IsDummy)
+                {
+                    if (first == -1) first = i;
+                    last = i;
+                }
+            }
+            return (first, last);
+        }
+
+        public (int min, int max) GetBoardWidth(int y)
+        {
+            int rows = _board.GetLength(0);
+            int cols = _board.GetLength(1);
+
+            // 横方向の範囲
+            int first = -1, last = -1;
+            for (int j = 0; j < cols; j++)
+            {
+                if (!_board[y, j].IsDummy)
+                {
+                    if (first == -1) first = j;
+                    last = j;
+                }
+            }
+            return (first, last);
+        }
         public void SetBoard(MassInfo[,] board)
         {
             _board = board;
@@ -103,64 +137,40 @@ namespace Bomb.Boards
             return res;
         }
 
-        private int GetMaxSpanOfOnes(MassInfo[,] grid)
+        private int GetMaxSpanOfOnes()
         {
             // 長い方を返す
-            return Math.Max(GetHeight(grid), GetWidth(grid));
+            return Math.Max(GetHeight(), GetWidth());
         }
 
-        private int GetHeight(MassInfo[,] grid)
+        private int GetHeight()
         {
-            int rows = grid.GetLength(0);
-            int cols = grid.GetLength(1);
+            int rows = _board.GetLength(0);
+            int cols = _board.GetLength(1);
 
             int maxVertical = 0;
             for (int j = 0; j < cols; j++)
             {
-                int first = -1, last = -1;
-                for (int i = 0; i < rows; i++)
-                {
-                    if (!grid[i, j].IsDummy)
-                    {
-                        if (first == -1) first = i;
-                        last = i;
-                    }
-                }
-
-                if (first != -1 && last != -1)
-                {
-                    int length = last - first + 1;
-                    maxVertical = Math.Max(maxVertical, length);
-                }
+                (int min, int max) = GetBoardHeight(j);
+                var length = max - min + 1;
+                if (maxVertical < length) maxVertical = length;
             }
             return maxVertical;
         }
 
-        private int GetWidth(MassInfo[,] grid)
+        private int GetWidth()
         {
-            int rows = grid.GetLength(0);
-            int cols = grid.GetLength(1);
+            int rows = _board.GetLength(0);
+            int cols = _board.GetLength(1);
 
             int maxHorizontal = 0;
 
             // 横方向の範囲
             for (int i = 0; i < rows; i++)
             {
-                int first = -1, last = -1;
-                for (int j = 0; j < cols; j++)
-                {
-                    if (!grid[i, j].IsDummy)
-                    {
-                        if (first == -1) first = j;
-                        last = j;
-                    }
-                }
-
-                if (first != -1 && last != -1)
-                {
-                    int length = last - first + 1;
-                    maxHorizontal = Math.Max(maxHorizontal, length);
-                }
+                (int min, int max) = GetBoardWidth(i);
+                var length = max - min + 1;
+                if (maxHorizontal < length) maxHorizontal = length;
             }
             return maxHorizontal;
         }

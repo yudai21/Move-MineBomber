@@ -1,6 +1,7 @@
 ﻿using Bomb.Boards.Flagged;
 using Bomb.Datas;
 using System;
+using UnityEngine;
 
 namespace Bomb.Boards
 {
@@ -28,12 +29,20 @@ namespace Bomb.Boards
         {
             _massManager = new MassManager(this);
             _flagController = new(this);
-            
+
         }
 
         public void Invoke(GameRule rule)
         {
-            _flagController.Init((int)(rule.FlagRate * Math.Pow(rule.MapSize, 2))); 
+            // イベントリセット
+            OnBombHit = null;
+            OnMassHit = null;
+            OnFlagCountChanged = null;
+            OnFlagToggled = null;
+            OnBoardRebuilt = null;
+
+            // マップ構築
+            _flagController.Init((int)(rule.FlagRate * Math.Pow(rule.MapSize, 2)));
             OnBoardRebuilt?.Invoke(_boardManager);
             _bombRemaining = BoardBuilder.Create(out _boardManager, rule);
         }
@@ -41,6 +50,14 @@ namespace Bomb.Boards
         public void NotifyBombHit(MassInfo info)
         {
             _bombRemaining--;
+#if UNITY_EDITOR
+            if (BombRemaining > 0)
+                Debug.Log($"{BombRemaining}");
+            else
+            {
+                Debug.Log("Game Clear");
+            }
+#endif
             OnBombHit?.Invoke(info);
         }
         public void NotifyFlagCountChanged(int remaining)
