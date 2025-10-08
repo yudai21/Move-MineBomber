@@ -11,28 +11,24 @@ public class PauseManager : MonoBehaviour
     void Start()
     {
         pauseCanvas.gameObject.SetActive(false);
+        pauseButton.onClick.AddListener(OnClickButton);
     }
 
-    void Update()
-    {
-        pauseButton.onClick.AddListener(() =>
-        {
-
-            pauseCanvas.SetActive(!isActive);
-
-            if (!isActive)
-            {
-                Debug.Log("Active");
-            }
-            else
-            {
-                Debug.Log("NotActive");
-            }
-        });
-    }
-
-    public void OnClickButton()
+    private void OnClickButton()
     {
         isActive = !isActive;
+        pauseCanvas.SetActive(isActive);
+        Debug.Log("Click");
+
+        if (isActive)
+        {
+            Debug.Log("Active");
+            GameManager.Instance.CurrentGameState = GameState.Paused;
+        }
+        else
+        {
+            Debug.Log("NotActive");
+            GameManager.Instance.CurrentGameState = GameState.Playing;
+        }
     }
 }
