@@ -19,6 +19,13 @@ public class GameTimer : MonoBehaviour
     void Start()
     {
         isRunning = false;
+
+        // 計測した時間のリセット
+        if (GameTimerManager.Instance.GetCurrentTime() != 0)
+        {
+            GameTimerManager.Instance.ResetCurrentTime();
+        }
+        
         ResetTimer(); // シーン開始時に自動で0からスタート
     }
 
@@ -50,9 +57,16 @@ public class GameTimer : MonoBehaviour
         {
             isRunning = true;
         }
+        else if (GameManager.Instance.CurrentGameState == GameState.GameClear)
+        {
+            isRunning = false;
+            GameTimerManager.Instance.SetCurrentTime(elapsedTime); // 計測した時間を保存
+        }
         else
         {
             isRunning = false;
         }
     }
+
+
 }
