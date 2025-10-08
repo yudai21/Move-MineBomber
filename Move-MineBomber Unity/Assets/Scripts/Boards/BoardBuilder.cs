@@ -5,7 +5,8 @@ namespace Bomb.Boards
 {
     public static class BoardBuilder
     {
-        public static void Create(out BoardManager board, GameRule rule)
+        // int -> 爆弾の個数
+        public static int Create(out BoardManager board, GameRule rule)
         {
             board = new BoardManager();
             var size = rule.MapSize;
@@ -35,10 +36,11 @@ namespace Bomb.Boards
                 int index = RandomExtensions.Rand(0, allMasses.Count);
                 var m = allMasses[index];
                 m.type &= 0;
-                m.type |= MassType.Bomb;
+                m.type = (m.type & ~MassType.Empty) | MassType.Bomb;
                 board.SetMass(m.x, m.y, m);
                 allMasses.RemoveAt(index);
             }
+            return needBomb;
         }
     }
 }

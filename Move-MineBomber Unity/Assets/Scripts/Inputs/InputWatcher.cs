@@ -15,9 +15,15 @@ namespace Bomb.Inputs
         }
         public void OnLeftClick(InputValue value)
         {
-            var bV = GameSceneRooter.instance.BoardViewer;
-            var mass = bV.GetMassFromVector3(_vec);
-            Debug.Log($"[{_vec}]クリックしたマス:{mass.type.ToString()}, x:{mass.x}, y:{mass.y}");
+            var iC = GameSceneRooter.instance.InputController;
+            iC.Input(_vec);
+            
+        }
+        public void OnRightClick(InputValue value)
+        {
+            Debug.Log("Right Click");
+            var iC = GameSceneRooter.instance.InputController;
+            iC.Input(_vec, false);
         }
     }
 }

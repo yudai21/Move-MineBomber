@@ -2,8 +2,8 @@
 
 namespace HighElixir.Pool
 {
-    public abstract class SharedPool<T> : SingletonBehavior<SharedPool<T>>
-        where T : MonoBehaviour
+    public abstract class SharedPoolGeneric<T> : SingletonBehavior<SharedPoolGeneric<T>>
+        where T : Object
     {
         [Header("PoolSettings")]
         [SerializeField] private T _pref;

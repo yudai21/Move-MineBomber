@@ -1,25 +1,45 @@
 ﻿using Bomb.Boards;
 using HighElixir.Pool;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
-using static UnityEngine.EventSystems.EventTrigger;
 
 namespace Bomb.Views
 {
     public class BoardViewer : MonoBehaviour
     {
+        private class MassWrapper
+        {
+            public MassViewer viewer;
+            public bool isDirty;
+        }
         [SerializeField] private Vector2 _centerPos = Vector2.zero; // 画面上の原点オフセット（マス単位）
         [SerializeField] private float _massScale = 1.0f;           // 1マスのスケール（ワールド単位）
-        [SerializeField] private GameObject _pref;
+        [SerializeField] private MassViewer _pref;
+        [SerializeField] private PoolObj _poolObj; // TMPro
 
-        private Pool<GameObject> _pool;
-        private BoardManager _boardManager;
-        private Dictionary<MassInfo, GameObject> _maps = new();
-        public void Invoke(BoardManager manager)
+        private Pool<MassViewer> _pool;
+        private BoardController _controller;
+        private Dictionary<(int x, int y), MassWrapper> _maps = new();
+        public Pool<GameObject> Pool => _poolObj.Pool;
+        public void Invoke(BoardController controller)
         {
-            _boardManager = manager;
-            // 必要ならここで初期描画（Sprite/Tilemap）を起動
-            // BoardView();
+            Action<MassInfo> ac = m =>
+            {
+                if (_maps.TryGetValue((m.x, m.y), out var wrapper))
+                {
+                    wrapper.isDirty = true;
+                }
+            };
+            _controller = controller;
+            _controller.OnMassHit += ac;
+            _controller.OnFlagToggled += (m, _) =>
+            {
+                if (_maps.TryGetValue((m.x, m.y), out var wrapper))
+                {
+                    wrapper.isDirty = true;
+                }
+            };
         }
 
         /// <summary>
@@ -27,21 +47,9 @@ namespace Bomb.Views
         /// </summary>
         public void BoardView()
         {
-            if (_boardManager == null || _massScale <= 0f) return;
+            if (_controller == null) return;
 
-            (int centerX, int centerY) = _boardManager.GetCenter();
-            foreach (var mass in _boardManager.GetAllMasses()) // 既定でダミー除外ならOK
-            {
-                float x = (mass.x - centerX + _centerPos.x) * _massScale;
-                float y = (mass.y - centerY + _centerPos.y) * _massScale;
-
-                if (!_maps.TryGetValue(mass, out var go))
-                    go = _pool.Get();
-                go.transform.position = new Vector2(x, y);
-                go.GetComponent<SpriteRenderer>().color = PickColor(mass.type);
-
-                _maps.TryAdd(mass, go);
-            }
+            SetMass();
             // 例：
             // 1) _boardManager.GetAllMasses()でアクティブマスを走査
             // 2) 各マスの表示(色/スプライト/エフェクト)を更新
@@ -57,9 +65,9 @@ namespace Bomb.Views
         /// </summary>
         public MassInfo GetMassFromVector3(Vector3 position)
         {
-            if (_boardManager == null || _massScale <= 0f) return default;
+            if (_controller == null || _massScale <= 0f) return default;
 
-            (int centerX, int centerY) = _boardManager.GetCenter();
+            (int centerX, int centerY) = _controller.Board.GetCenter();
 
             // 描画式の逆変換：
             //world = (mass - center + _centerPos) * _massScale
@@ -71,7 +79,7 @@ namespace Bomb.Views
             int my = Mathf.RoundToInt(gy + centerY - _centerPos.y);
             Debug.Log($"Checked: x[{mx}], y[{my}]");
             // 境界チェック
-            var board = _boardManager.Board;
+            var board = _controller.Board.Board;
             if (board == null) return default;
 
             int w = board.GetLength(0);
@@ -85,20 +93,36 @@ namespace Bomb.Views
             return m;
         }
 
-        /// <summary>
-        /// フラグ前提の色決定（switch等価比較はNG）
-        /// </summary>
-        private static Color PickColor(MassType type)
+        private void SetMass()
         {
-            // 優先度例：Bomb > Empty > その他
-            if ((type & MassType.Bomb) != 0) return Color.red;
-            if ((type & MassType.Empty) != 0) return Color.blue;
-            return Color.green;
+            if (_massScale <= 0f) return;
+            (int centerX, int centerY) = _controller.Board.GetCenter();
+            foreach (var mass in _controller.Board.GetAllMasses()) // 既定でダミー除外ならOK
+            {
+                if (!_maps.TryGetValue((mass.x, mass.y), out var wr))
+                {
+                    wr = new()
+                    {
+                        viewer = _pool.Get(),
+                        isDirty = true
+                    };
+                    _maps[(mass.x, mass.y)] = wr;
+                }
+                if (!wr.isDirty) continue;
+                wr.isDirty = false;
+                float x = (mass.x - centerX + _centerPos.x) * _massScale;
+                float y = (mass.y - centerY + _centerPos.y) * _massScale;
+                var go = wr.viewer;
+                go.transform.position = new Vector2(x, y);
+                go.transform.localScale = Vector3.one * _massScale;
+                go.UpdateMass(mass);
+                wr.viewer = go;
+            }
         }
 
         private void Awake()
         {
-            _pool = new Pool<GameObject>(_pref, 100, transform, false);
+            _pool = new Pool<MassViewer>(_pref, 100, transform, false);
         }
     }
 }

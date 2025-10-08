@@ -1,10 +1,14 @@
-﻿namespace Bomb.Boards
+﻿using System;
+
+namespace Bomb.Boards
 {
+#if UNITY_EDITOR
+    [Serializable]
+#endif
     public struct MassInfo
     {
         public int x, y;
         public MassType type;
-        public bool isOpened; // 既に開かれているかどうか
         public int aroundBombCount;
 
         public bool IsDummy

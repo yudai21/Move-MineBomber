@@ -1,10 +1,8 @@
 ﻿using Bomb.Datas;
 using Bomb.Views;
-using Cysharp.Threading.Tasks;
-using UniRx.Triggers;
-using UniRx;
 using UnityEngine;
 using HighElixir;
+using Bomb.Inputs;
 
 namespace Bomb.Managers
 {
@@ -12,17 +10,24 @@ namespace Bomb.Managers
     {
         [Header("Reference")]
         [SerializeField] private BoardViewer _viewer;
+        [SerializeField] private Canvas _canvas;
+
         private GameSceneManager _gameManager = new();
+        private ViewObjRooter _viewObjRooter;
+        private InputController _inputController;
 #if UNITY_EDITOR
         [SerializeField]
 #endif
         private GameRule _rule;
 
-        public BoardViewer BoardViewer => _viewer;
+        public ViewObjRooter View => _viewObjRooter;
+        public InputController InputController => _inputController;
+        public GameSceneManager Manager => _gameManager;
         public void Invoke()
         {
             _gameManager.Invoke(_rule);
-            _viewer.Invoke(_gameManager.Board);
+            _viewObjRooter.Invoke(_gameManager.Board);
+            _inputController = new InputController(this);
         }
 
         public void SetRule(GameRule rule)
@@ -32,13 +37,15 @@ namespace Bomb.Managers
 
         private void Update()
         {
-            _viewer.BoardView();
+            _viewObjRooter.Update(Time.deltaTime);
         }
 #if UNITY_EDITOR
         protected override void Awake()
         {
             base.Awake();
-            Debug.Log("AAAAA");
+            _viewObjRooter = new(_viewer);
+            _viewObjRooter.SetCamera(Camera.main);
+            _viewObjRooter.SetCanvas(_canvas);
             Invoke();
         }
 #endif

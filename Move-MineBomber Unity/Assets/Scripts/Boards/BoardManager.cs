@@ -33,12 +33,24 @@ namespace Bomb.Boards
         {
             if (_board == null) return;
             _board[x, y] = mass;
-#if UNITY_EDITOR
-            Debug.Log($"Set : x{x}, y{y}");
-#endif
+            //#if UNITY_EDITOR
+            //            Debug.Log($"Set : x{x}, y{y}");
+            //#endif
+            _boardDirty = true;
+        }
+        public void SetMass(MassInfo info) => SetMass(info.x, info.y, info);
+
+        /// <summary>
+        /// マスの状態をコピーする
+        /// </summary>
+        public void CopyMassState(int x, int y, MassInfo info)
+        {
+            _board[x, y].type = info.type;
+            _board[x, y].aroundBombCount = info.aroundBombCount;
             _boardDirty = true;
         }
 
+        public void CopyMassState(MassInfo info) => CopyMassState(info.x, info.y, info);
         public (int x, int y) GetCenter()
         {
             return (VirtualSize / 2, VirtualSize / 2);
@@ -64,7 +76,7 @@ namespace Bomb.Boards
         {
             return GetMass(mass.x, mass.y);
         }
-        public List<MassInfo> GetAroundMass(int x, int y)
+        public List<MassInfo> GetAroundMass(int x, int y, bool skippingDummy = true)
         {
             var res = new List<MassInfo>();
             (int x, int y)[] array =
@@ -78,12 +90,19 @@ namespace Bomb.Boards
                 (x - 1, y + 1),
                 (x + 1, y - 1),
             };
-            foreach ((int x, int y) m in array)
+            foreach ((int nx, int ny) in array)
             {
-                res.Add(GetMass(x, y));
+                if (nx < 0 || ny < 0 || nx >= VirtualSize || ny >= VirtualSize)
+                    continue; // 範囲外はスキップ
+
+                var m = _board[nx, ny];
+                if (skippingDummy && m.IsDummy) continue; // Dummyも除外
+
+                res.Add(m);
             }
             return res;
         }
+
         private int GetMaxSpanOfOnes(MassInfo[,] grid)
         {
             // 長い方を返す
