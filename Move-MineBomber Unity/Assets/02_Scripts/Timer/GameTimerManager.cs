@@ -1,10 +1,12 @@
 using UnityEngine;
 
+/// <summary>
+/// タイマーの値を保持するシングルトン
+/// </summary>
 public class GameTimerManager : MonoBehaviour
 {
     public static GameTimerManager Instance { get; private set; }
-
-    [SerializeField] GameTimer gameTimer;
+    private float currentTime;
 
     void Awake()
     {
@@ -15,28 +17,23 @@ public class GameTimerManager : MonoBehaviour
         }
         else
         {
-            Destroy(gameObject);
+            DestroyImmediate(gameObject);
         }
     }
 
-    public void StopTimer()
+    public float GetCurrentTime()
     {
-        gameTimer.StopTimer();
+        return currentTime;
     }
 
-    public void PauseTimer()
+    public void SetCurrentTime(float Time)
     {
-        gameTimer.PauseTimer();
+        currentTime = Time;
     }
 
-    public void ResumeTimer()
+    public void ResetCurrentTime()
     {
-        gameTimer.ResumeTimer();
-    }
-
-    public float GetTime()
-    {
-        return gameTimer.GetTime();
+        currentTime = 0;
     }
 }
 

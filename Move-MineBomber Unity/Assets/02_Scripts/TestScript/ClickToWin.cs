@@ -1,8 +1,12 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+/// <summary>
+/// タイマー動作切り替えテスト
+/// </summary>
 public class ClickToWin : MonoBehaviour
 {
+    [SerializeField] private GameTimer _gameTimer;
     private int clickCount = 0; // クリック回数を管理
 
     void Update()
@@ -20,7 +24,7 @@ public class ClickToWin : MonoBehaviour
     void GameClear()
     {
         Debug.Log("ゲームクリア！"); // ゲームクリア処理
-        GameTimerManager.Instance.StopTimer(); // タイマーを停止
+        _gameTimer.IsRunning = false;
         SceneManager.LoadScene("TestClearScene");
     }
 }
