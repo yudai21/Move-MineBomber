@@ -12,11 +12,11 @@ namespace Bomb.Boards
             _controller = controller;
         }
 
-        public void Hit(int x, int y)
+        public bool Hit(int x, int y)
         {
             var m = _controller.Board.GetMass(x, y);
             if ((m.type & MassType.Opened) != 0)
-                return;
+                return false;
 
             // 爆弾クリック
             if ((m.type & MassType.Bomb) != 0)
@@ -25,13 +25,13 @@ namespace Bomb.Boards
                 _controller.Board.CopyMassState(m);
                 _controller.NotifyBombHit(m); // ← イベント通知
                 _controller.NotifyMassHit(m);
-                return;
+                return false;
             }
 
             // 空マス開示（BFS）
             Queue<MassInfo> queue = new();
             queue.Enqueue(m);
-
+            var res = false;
             while (queue.Count > 0)
             {
                 var current = queue.Dequeue();
@@ -39,6 +39,7 @@ namespace Bomb.Boards
                 // 既に開いてたらスキップ
                 if ((current.type & MassType.Opened) != 0) continue;
 
+                res = true;
                 current.type |= MassType.Opened;
                 var around = _controller.Board.GetAroundMass(current.x, current.y);
                 int bombs = around.Count(a => (a.type & MassType.Bomb) != 0);
@@ -60,8 +61,9 @@ namespace Bomb.Boards
                 _controller.Board.CopyMassState(current);
                 _controller.NotifyMassHit(current);
             }
+            return res;
         }
 
-        public void Hit(MassInfo massInfo) => Hit(massInfo.x, massInfo.y);
+        public bool Hit(MassInfo massInfo) => Hit(massInfo.x, massInfo.y);
     }
 }
