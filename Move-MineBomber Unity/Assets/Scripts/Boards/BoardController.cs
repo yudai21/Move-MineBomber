@@ -55,8 +55,8 @@ namespace Bomb.Boards
         {
             OnMassHit?.Invoke(info);
         }
-        public void Hit(MassInfo info) => _massManager.Hit(info);
-        public void Hit(int x, int y) => _massManager.Hit(x, y);
+        public bool Hit(MassInfo info) => _massManager.Hit(info);
+        public bool Hit(int x, int y) => _massManager.Hit(x, y);
         public void ToggleFlag(MassInfo info) => _flagController.ToggleFlag(info);
         public void ToggleFlag(int x, int y) => _flagController.ToggleFlag(x, y);
     }
