@@ -61,7 +61,7 @@ namespace Bomb.Views
                 if (_countText != null)
                 {
                     _countText.gameObject.SetActive(false);
-                    GameSceneRooter.instance.View.Board.Pool.Release(_countText.gameObject);
+                    GameSceneRooter.instance.View.Pool.Release(_countText);
                     _countText = null;
                 }
             }
@@ -71,7 +71,7 @@ namespace Bomb.Views
         {
             if (_countText == null)
             {
-                var obj = GameSceneRooter.instance.View.Board.Pool.Get().GetComponent<TMP_Text>();
+                var obj = GameSceneRooter.instance.View.Pool.Get();
                 _countText = obj;
                 if (_uiRoot != null)
                     _countText.rectTransform.SetParent(_uiRoot, worldPositionStays: false);

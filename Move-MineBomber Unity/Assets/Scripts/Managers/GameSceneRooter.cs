@@ -4,6 +4,7 @@ using UnityEngine;
 using HighElixir;
 using Bomb.Inputs;
 using HighElixir.Timers;
+using HighElixir.Pool;
 
 namespace Bomb.Managers
 {
@@ -12,7 +13,7 @@ namespace Bomb.Managers
         [Header("Reference")]
         [SerializeField] private BoardViewer _viewer;
         [SerializeField] private Canvas _canvas;
-
+        [SerializeField] private TextPool _textPool;
         private GameSceneManager _gameManager = new();
         private ViewObjRooter _viewObjRooter;
         private InputController _inputController;
@@ -48,7 +49,7 @@ namespace Bomb.Managers
         {
             base.Awake();
             _timer = new Timer(typeof(GameSceneRooter));
-            _viewObjRooter = new(_viewer);
+            _viewObjRooter = new(_viewer, _textPool.Pool);
             _viewObjRooter.SetCamera(Camera.main);
             _viewObjRooter.SetCanvas(_canvas);
             Invoke();

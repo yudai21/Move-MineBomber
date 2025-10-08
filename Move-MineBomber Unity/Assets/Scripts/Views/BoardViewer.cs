@@ -16,12 +16,10 @@ namespace Bomb.Views
         [SerializeField] private Vector2 _centerPos = Vector2.zero; // 画面上の原点オフセット（マス単位）
         [SerializeField] private float _massScale = 1.0f;           // 1マスのスケール（ワールド単位）
         [SerializeField] private MassViewer _pref;
-        [SerializeField] private PoolObj _poolObj; // TMPro
 
         private Pool<MassViewer> _pool;
         private BoardController _controller;
         private Dictionary<(int x, int y), MassWrapper> _maps = new();
-        public Pool<GameObject> Pool => _poolObj.Pool;
         public void Invoke(BoardController controller)
         {
             Action<MassInfo> ac = m =>
@@ -77,7 +75,7 @@ namespace Bomb.Views
 
             int mx = Mathf.RoundToInt(gx + centerX - _centerPos.x);
             int my = Mathf.RoundToInt(gy + centerY - _centerPos.y);
-            Debug.Log($"Checked: x[{mx}], y[{my}]");
+            //Debug.Log($"Checked: x[{mx}], y[{my}]");
             // 境界チェック
             var board = _controller.Board.Board;
             if (board == null) return default;

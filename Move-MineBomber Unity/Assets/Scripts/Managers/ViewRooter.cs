@@ -1,4 +1,6 @@
 ﻿using Bomb.Boards;
+using HighElixir.Pool;
+using TMPro;
 using UnityEngine;
 
 namespace Bomb.Views
@@ -15,15 +17,17 @@ namespace Bomb.Views
         private Camera _camera;              // 3Dワールドを映すカメラ（必須）
         private Canvas _canvas;              // UIキャンバス
         private RectTransform _canvasRect;   // キャッシュ
-
+        private Pool<TMP_Text> _textPool;
         public BoardViewer Board => _board;
         public Camera Camera => _camera;
         public Canvas Canvas => _canvas;
+        public Pool<TMP_Text> Pool => _textPool;
         public bool IsReady => _board != null && _camera != null && _canvasRect != null;
 
-        public ViewObjRooter(BoardViewer boardViewer)
+        public ViewObjRooter(BoardViewer boardViewer, Pool<TMP_Text> textPool)
         {
             _board = boardViewer;
+            _textPool = textPool;
         }
 
         public void SetCamera(Camera camera)
@@ -55,7 +59,6 @@ namespace Bomb.Views
             if (_canvasRect == null || _camera == null)
                 return Vector2.zero;
 
-            // まずWorld→Screen
             Vector3 screenPos = _camera.WorldToScreenPoint(worldPos);
 
             // RenderModeごとにRectTransformUtility側の引数を変える
@@ -68,7 +71,10 @@ namespace Bomb.Views
             }
             else
             {
-                return screenPos;
+                // Overrayの場合そのまま返す
+                //return screenPos;
+                // Overlayの場合
+                return screenPos - new Vector3(Screen.width / 2f, Screen.height / 2f);
             }
 
             if (RectTransformUtility.ScreenPointToLocalPointInRectangle(
