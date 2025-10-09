@@ -924,9 +924,9 @@ MonoBehaviour:
     MapSize: 7
     BombRate: 0.125
     FlagRate: 0.5
-    Handling: 0
-    IntervalOfMove: 0
-    MoveLength: 0
+    Handling: 20
+    IntervalOfMove: 5
+    MoveLength: 2
 --- !u!4 &1849094741
 Transform:
   m_ObjectHideFlags: 0

@@ -85,7 +85,6 @@ namespace Bomb.Views
             {
                 return localPos;
             }
-
             return Vector2.zero;
         }
 

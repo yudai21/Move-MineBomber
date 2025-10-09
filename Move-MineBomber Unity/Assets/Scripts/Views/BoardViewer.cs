@@ -1,8 +1,10 @@
 ﻿using Bomb.Boards;
+using Bomb.Boards.Flagged;
+using Bomb.Datas;
 using HighElixir.Pool;
-using System;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEngine.EventSystems.EventTrigger;
 
 namespace Bomb.Views
 {
@@ -22,22 +24,14 @@ namespace Bomb.Views
         private Dictionary<(int x, int y), MassWrapper> _maps = new();
         public void Invoke(BoardController controller)
         {
-            Action<MassInfo> ac = m =>
-            {
-                if (_maps.TryGetValue((m.x, m.y), out var wrapper))
-                {
-                    wrapper.isDirty = true;
-                }
-            };
             _controller = controller;
-            _controller.OnMassHit += ac;
-            _controller.OnFlagToggled += (m, _) =>
-            {
-                if (_maps.TryGetValue((m.x, m.y), out var wrapper))
-                {
-                    wrapper.isDirty = true;
-                }
-            };
+            _controller.OnMassHit -= OnMassHit;
+            _controller.OnMassHit += OnMassHit;
+            _controller.OnFlagToggled -= OnFlagToggled;
+            _controller.OnFlagToggled += OnFlagToggled;
+
+            _controller.OnBoardMove -= UpdateMovedBoard;
+            _controller.OnBoardMove += UpdateMovedBoard;
         }
 
         /// <summary>
@@ -91,6 +85,37 @@ namespace Bomb.Views
             return m;
         }
 
+        public void UpdateMovedBoard(List<SlideResult> results)
+        {
+            if (results == null || results.Count == 0) return;
+            if (_controller == null || _massScale <= 0f) return;
+
+            (int centerX, int centerY) = _controller.Board.GetCenter();
+
+            foreach (var result in results)
+            {
+                // 古いマス位置に対応するViewerを探す
+                if (!_maps.TryGetValue((result.Old.x, result.Old.y), out var wrapper))
+                    continue;
+
+                // 座標計算
+                float newX = (result.New.x - centerX + _centerPos.x) * _massScale;
+                float newY = (result.New.y - centerY + _centerPos.y) * _massScale;
+
+                // 表示位置を更新
+                var viewer = wrapper.viewer;
+                viewer.transform.position = new Vector2(newX, newY);
+                viewer.UpdateMass(result.New);
+
+                // 辞書キーを更新（旧位置→新位置）
+                _maps.Remove((result.Old.x, result.Old.y));
+                _maps[(result.New.x, result.New.y)] = wrapper;
+
+                // Dirtyフラグもリセット
+                wrapper.isDirty = false;
+            }
+        }
+
         private void SetMass()
         {
             if (_massScale <= 0f) return;
@@ -118,9 +143,40 @@ namespace Bomb.Views
             }
         }
 
+        private void OnMassHit(MassInfo info)
+        {
+            if (_maps.TryGetValue((info.x, info.y), out var wrapper))
+            {
+                wrapper.isDirty = true;
+            }
+        }
+        private void OnFlagToggled(MassInfo info, FlagController.FlagToggleResult _)
+        {
+            if (_maps.TryGetValue((info.x, info.y), out var wrapper))
+            {
+                wrapper.isDirty = true;
+            }
+        }
+        //
         private void Awake()
         {
             _pool = new Pool<MassViewer>(_pref, 100, transform, false);
         }
+
+#if UNITY_EDITOR
+        private void OnDrawGizmosSelected()
+        {
+            var board = Managers.GameSceneRooter.instance.Manager.Board.Board;
+            (int cX, int cY) = board.GetCenter();
+            var mass = board.GetAllMasses();
+            foreach (var m in mass)
+            {
+                float x = (m.x - cX + _centerPos.x) * _massScale;
+                float y = (m.y - cY + _centerPos.y) * _massScale;
+                Gizmos.color = Color.cyan;
+                Gizmos.DrawSphere(new Vector2(x, y), 0.2f);
+            }
+        }
+#endif
     }
 }

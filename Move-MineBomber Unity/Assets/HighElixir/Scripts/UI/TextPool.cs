@@ -8,13 +8,25 @@ namespace HighElixir.Pool
         [Header("Pool")]
         [SerializeField] private TMP_Text _prefab;
         [SerializeField] private int _size;
-        private RectTransform _container;
         private Pool<TMP_Text> _textPool;
-        public Pool<TMP_Text> Pool => _textPool;
+        public Pool<TMP_Text> Pool
+        {
+            get
+            {
+                if (_textPool == null) Create();
+                return _textPool;
+
+            }
+        }
+
         private void Awake()
         {
-            _container = GetComponent<RectTransform>();
-            _textPool = new Pool<TMP_Text>(_prefab, _size, _container);
+            Create();
+        }
+
+        private void Create()
+        {
+            _textPool = new Pool<TMP_Text>(_prefab, _size, transform); ;
         }
     }
 }

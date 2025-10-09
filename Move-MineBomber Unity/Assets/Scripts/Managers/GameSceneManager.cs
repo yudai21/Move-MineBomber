@@ -1,13 +1,11 @@
 ﻿using Bomb.Boards;
 using Bomb.Datas;
-using UnityEngine;
 
 namespace Bomb.Managers
 {
     public class GameSceneManager
     {
         private BoardController _board;
-
         public BoardController Board => _board;
 
         public GameSceneManager()
@@ -18,6 +16,5 @@ namespace Bomb.Managers
         {
             _board.Invoke(rule);
         }
-
     }
 }
