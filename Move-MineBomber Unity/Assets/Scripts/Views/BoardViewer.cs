@@ -4,7 +4,6 @@ using Bomb.Datas;
 using HighElixir.Pool;
 using System.Collections.Generic;
 using UnityEngine;
-using static UnityEngine.EventSystems.EventTrigger;
 
 namespace Bomb.Views
 {
@@ -41,7 +40,7 @@ namespace Bomb.Views
         {
             if (_controller == null) return;
 
-            SetMass();
+            SetMasses();
             // 例：
             // 1) _boardManager.GetAllMasses()でアクティブマスを走査
             // 2) 各マスの表示(色/スプライト/エフェクト)を更新
@@ -90,8 +89,6 @@ namespace Bomb.Views
             if (results == null || results.Count == 0) return;
             if (_controller == null || _massScale <= 0f) return;
 
-            (int centerX, int centerY) = _controller.Board.GetCenter();
-
             foreach (var result in results)
             {
                 // 古いマス位置に対応するViewerを探す
@@ -99,13 +96,7 @@ namespace Bomb.Views
                     continue;
 
                 // 座標計算
-                float newX = (result.New.x - centerX + _centerPos.x) * _massScale;
-                float newY = (result.New.y - centerY + _centerPos.y) * _massScale;
-
-                // 表示位置を更新
-                var viewer = wrapper.viewer;
-                viewer.transform.position = new Vector2(newX, newY);
-                viewer.UpdateMass(result.New);
+                SetMass(wrapper.viewer, result.New);
 
                 // 辞書キーを更新（旧位置→新位置）
                 _maps.Remove((result.Old.x, result.Old.y));
@@ -116,7 +107,7 @@ namespace Bomb.Views
             }
         }
 
-        private void SetMass()
+        private void SetMasses()
         {
             if (_massScale <= 0f) return;
             (int centerX, int centerY) = _controller.Board.GetCenter();
@@ -133,13 +124,7 @@ namespace Bomb.Views
                 }
                 if (!wr.isDirty) continue;
                 wr.isDirty = false;
-                float x = (mass.x - centerX + _centerPos.x) * _massScale;
-                float y = (mass.y - centerY + _centerPos.y) * _massScale;
-                var go = wr.viewer;
-                go.transform.position = new Vector2(x, y);
-                go.transform.localScale = Vector3.one * _massScale;
-                go.UpdateMass(mass);
-                wr.viewer = go;
+                SetMass(wr.viewer, mass);
             }
         }
 
@@ -157,6 +142,16 @@ namespace Bomb.Views
                 wrapper.isDirty = true;
             }
         }
+
+        private void SetMass(MassViewer viewer, MassInfo info)
+        {
+            (int centerX, int centerY) = _controller.Board.GetCenter();
+            float x = (info.x - centerX + _centerPos.x) * _massScale;
+            float y = (info.y - centerY + _centerPos.y) * _massScale;
+            viewer.transform.position = new Vector2(x, y);
+            viewer.transform.localScale = Vector3.one * _massScale;
+            viewer.UpdateMass(info);
+        }
         //
         private void Awake()
         {
@@ -166,9 +161,8 @@ namespace Bomb.Views
 #if UNITY_EDITOR
         private void OnDrawGizmosSelected()
         {
-            var board = Managers.GameSceneRooter.instance.Manager.Board.Board;
-            (int cX, int cY) = board.GetCenter();
-            var mass = board.GetAllMasses();
+            (int cX, int cY) = _controller.Board.GetCenter();
+            var mass = _controller.Board.GetAllMasses();
             foreach (var m in mass)
             {
                 float x = (m.x - cX + _centerPos.x) * _massScale;

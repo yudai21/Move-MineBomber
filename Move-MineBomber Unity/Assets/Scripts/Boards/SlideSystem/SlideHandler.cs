@@ -43,6 +43,7 @@ namespace Bomb.Boards.Slides
             List<SlideResult> affectedMasses = new();
 
             // スライド対象が縦列か横列かをランダムに決定
+            // NOTE:スライド対象に対してスライド方向が固定なので、1マスでも移動に成功するまで上下左右にそれぞれ移動を試してみてもいいかも
             if (RandomExtensions.Chance(0.5f))
             {
                 //  縦スライド（列単位） 
