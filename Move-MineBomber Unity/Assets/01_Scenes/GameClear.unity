@@ -215,9 +215,9 @@ MonoBehaviour:
           m_StringArgument: Title
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 465625222}
-        m_TargetAssemblyTypeName: UnityEngine.AudioSource, UnityEngine
-        m_MethodName: Play
+      - m_Target: {fileID: 465625224}
+        m_TargetAssemblyTypeName: GameClearSE, Assembly-CSharp
+        m_MethodName: playclickSE
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -760,8 +760,9 @@ GameObject:
   m_Component:
   - component: {fileID: 465625223}
   - component: {fileID: 465625222}
+  - component: {fileID: 465625224}
   m_Layer: 0
-  m_Name: Audio Source
+  m_Name: SE
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -778,7 +779,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
-  m_Resource: {fileID: 8300000, guid: b2bd494cd6b62764e83789a72815090d, type: 3}
+  m_Resource: {fileID: 0}
   m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
@@ -879,6 +880,20 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &465625224
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 465625221}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 09127feb6f325ef4fb0458eaa6aa1a99, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  clickSE: {fileID: 8300000, guid: b2bd494cd6b62764e83789a72815090d, type: 3}
+  clearSE: {fileID: 8300000, guid: 05ed7b26ad7f3e74e9b0865c0c912840, type: 3}
 --- !u!1 &506271639
 GameObject:
   m_ObjectHideFlags: 0
@@ -1190,9 +1205,9 @@ MonoBehaviour:
           m_StringArgument: GamePlay
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 465625222}
-        m_TargetAssemblyTypeName: UnityEngine.AudioSource, UnityEngine
-        m_MethodName: Play
+      - m_Target: {fileID: 465625224}
+        m_TargetAssemblyTypeName: GameClearSE, Assembly-CSharp
+        m_MethodName: playclickSE
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
