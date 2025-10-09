@@ -487,6 +487,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   timerText: {fileID: 1167503260}
+  LimitTime: 999
 --- !u!1 &1289383125
 GameObject:
   m_ObjectHideFlags: 0

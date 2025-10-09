@@ -6,11 +6,16 @@ using TMPro;
 /// </summary>
 public class GameTimer : MonoBehaviour
 {
-    [SerializeField] TMP_Text timerText;
+    [SerializeField] private TMP_Text timerText;
+
+    [Header("ゲームオーバー時間")]
+    [SerializeField] private bool TimeUpGameOver = false;
+    [SerializeField] private int LimitTime = 999;
+
 
     private float elapsedTime = 0f;
     private bool isRunning = false;
-    public bool IsRunning // 基本使用しない
+    public bool IsRunning // テスト用　基本使用しない
     {
         get { return isRunning; }
         set { isRunning = value; }
@@ -31,18 +36,25 @@ public class GameTimer : MonoBehaviour
 
     void Update()
     {
+        // 上限時間経過でゲームオーバー
+        if (elapsedTime >= LimitTime && TimeUpGameOver)
+        {
+            GameManager.Instance.CurrentGameState = GameState.GameOver;
+        }
+
         GameStateCheck();
 
         if (isRunning)
-        {
-            elapsedTime += Time.deltaTime;
-
-            if (timerText != null)
             {
-                int seconds = Mathf.FloorToInt(elapsedTime);
-                timerText.text = seconds.ToString();
+                elapsedTime += Time.deltaTime;
+
+                if (timerText != null)
+                {
+                    int seconds = Mathf.FloorToInt(elapsedTime);
+
+                    timerText.text = seconds.ToString();
+                }
             }
-        }
     }
 
     public void ResetTimer()
