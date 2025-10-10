@@ -7,9 +7,9 @@ namespace Bomb.Boards
     public class BoardManager
     {
         public static readonly int VirtualHeight = 9;
-        public static readonly int VirtualWidth = 14;
+        public static readonly int VirtualWidth = 18;
 
-        private MassInfo[,] _board = new MassInfo[VirtualWidth, VirtualHeight];
+        private MassInfo[,] _board = new MassInfo[VirtualHeight, VirtualWidth];
 
         public MassInfo[,] Board => _board;
 
@@ -54,7 +54,7 @@ namespace Bomb.Boards
         // ===== 情報取得 =====
 
         /// <summary>ボードの中央座標を返す</summary>
-        public (int x, int y) GetCenter() => (VirtualSize / 2, VirtualSize / 2);
+        public (int x, int y) GetCenter() => (VirtualHeight / 2, VirtualWidth / 2);
 
         /// <summary>全てのマスを取得（Dummyを無視可能）</summary>
         public List<MassInfo> GetAllMasses(bool ignoreDummy = true)
@@ -77,7 +77,7 @@ namespace Bomb.Boards
         /// <summary>指定位置のマスを取得</summary>
         public MassInfo GetMass(int x, int y)
         {
-            if (x < 0 || y < 0 || x >= VirtualSize || y >= VirtualSize)
+            if (x < 0 || y < 0 || x >= VirtualHeight || y >= VirtualWidth)
                 return default;
             return _board[x, y];
         }

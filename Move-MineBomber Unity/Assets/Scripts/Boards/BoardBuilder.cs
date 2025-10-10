@@ -10,7 +10,7 @@ namespace Bomb.Boards
         {
             board = new BoardManager();
             var size = rule.MapSize;
-            board.SetBoard(new MassInfo[BoardManager.VirtualSize, BoardManager.VirtualSize]);
+            board.SetBoard(new MassInfo[BoardManager.VirtualHeight, BoardManager.VirtualWidth]);
             (var x_min, var y_min) = board.GetCenter();
             var sizeDelta = size / 2;
             for (int i = 0; i < size; i++)
