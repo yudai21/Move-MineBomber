@@ -7,14 +7,15 @@ namespace HighElixir.Timers.Internal
     internal class GlobalTimerDriver : MonoBehaviour
     {
         private void Update()
-        {
-            if (GlobalTimer.update.IsCreated)
-                GlobalTimer.update.Instance.Update(Time.deltaTime);
-        }
+            => UpdateTimer(GlobalTimer.update, Time.deltaTime);
+
         private void FixedUpdate()
+            => UpdateTimer(GlobalTimer.fixedUpdate, Time.fixedDeltaTime);
+
+        private void UpdateTimer(GlobalTimer.Wrapper wrapper, float time)
         {
-            if (GlobalTimer.fixedUpdate.IsCreated)
-                GlobalTimer.fixedUpdate.Instance.Update(Time.fixedDeltaTime);
+            if (wrapper.IsCreated)
+                wrapper.Instance.Update(time);
         }
     }
 #else

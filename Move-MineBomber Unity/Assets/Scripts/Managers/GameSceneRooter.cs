@@ -3,7 +3,8 @@ using Bomb.Views;
 using UnityEngine;
 using HighElixir;
 using Bomb.Inputs;
-using UnityEngine.Events;
+using HighElixir.Timers;
+using HighElixir.Pool;
 
 namespace Bomb.Managers
 {
@@ -12,7 +13,7 @@ namespace Bomb.Managers
         [Header("Reference")]
         [SerializeField] private BoardViewer _viewer;
         [SerializeField] private Canvas _canvas;
-
+        [SerializeField] private TextPool _textPool;
         private GameSceneManager _gameManager = new();
         private ViewObjRooter _viewObjRooter;
         private InputController _inputController;
@@ -20,20 +21,14 @@ namespace Bomb.Managers
         [SerializeField]
 #endif
         private GameRule _rule;
-
         public ViewObjRooter View => _viewObjRooter;
         public InputController InputController => _inputController;
         public GameSceneManager Manager => _gameManager;
-        public GameRule Rule => _rule;
-
-        [SerializeField] private UnityEvent _onGameInvoke;
-        public UnityEvent OnGameInvoke => _onGameInvoke;
         public void Invoke()
         {
             _gameManager.Invoke(_rule);
             _viewObjRooter.Invoke(_gameManager.Board);
             _inputController = new InputController(this);
-            _onGameInvoke?.Invoke();
         }
 
         public void SetRule(GameRule rule)
@@ -43,17 +38,22 @@ namespace Bomb.Managers
 
         private void Update()
         {
-            _viewObjRooter.Update(Time.deltaTime);
+            var dT = Time.deltaTime;
+            _viewObjRooter.Update(dT);
         }
 #if UNITY_EDITOR
         protected override void Awake()
         {
             base.Awake();
-            _viewObjRooter = new(_viewer);
+            _viewObjRooter = new(_viewer, _textPool.Pool);
             _viewObjRooter.SetCamera(Camera.main);
             _viewObjRooter.SetCanvas(_canvas);
             Invoke();
         }
 #endif
+        private void OnApplicationQuit()
+        {
+            _gameManager.Dispose();
+        }
     }
 }

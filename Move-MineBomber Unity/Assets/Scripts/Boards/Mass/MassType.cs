@@ -12,4 +12,12 @@ namespace Bomb.Boards
         Warning = 1 << 3, // 移動の警告表示
         Opened = 1 << 4, // 開示済み
     }
+
+    public static class MassTypeEx 
+    {
+        public static bool Has(this MassType value, MassType needType)
+        {
+            return (value & needType) != 0;
+        }
+    }
 }
