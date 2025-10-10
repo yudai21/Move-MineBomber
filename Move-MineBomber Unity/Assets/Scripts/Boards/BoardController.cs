@@ -1,6 +1,8 @@
 ﻿using Bomb.Boards.Flagged;
 using Bomb.Boards.Slides;
 using Bomb.Datas;
+using Bomb.Managers;
+using Bomb.Views;
 using System;
 using System.Collections.Generic;
 using UnityEngine;

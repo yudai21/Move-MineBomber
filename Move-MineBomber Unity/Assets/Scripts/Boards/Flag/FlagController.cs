@@ -11,6 +11,7 @@ namespace Bomb.Boards.Flagged
         private int _flagsRemaining = 0;
 
         public int FlagsRemaining => _flagsRemaining;
+        public event Action<int> OnFlagsChanged;
 
         public FlagController(BoardController controller)
         {
