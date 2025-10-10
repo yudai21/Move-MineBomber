@@ -1817,7 +1817,7 @@ MonoBehaviour:
     MapSize: 7
     BombRate: 0.125
     FlagRate: 0.5
-    Handling: 20
+    Handling: 15
     IntervalOfMove: 30
     MoveLength: 1
 --- !u!4 &623201389
@@ -2499,6 +2499,7 @@ GameObject:
   - component: {fileID: 1013817810}
   - component: {fileID: 1013817809}
   - component: {fileID: 1013817811}
+  - component: {fileID: 1013817812}
   m_Layer: 0
   m_Name: Handle
   m_TagString: Untagged
@@ -2547,6 +2548,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _text: {fileID: 227958770}
+--- !u!114 &1013817812
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1013817808}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a7d46ff80f7d7754a819a7f4bca0b033, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  BombValue: {fileID: 1628456907}
 --- !u!1 &1227872262
 GameObject:
   m_ObjectHideFlags: 0
@@ -3852,7 +3866,6 @@ SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 1970965268}
-  - {fileID: 529603050}
   - {fileID: 125625204}
   - {fileID: 1227872266}
   - {fileID: 687472180}
@@ -3867,3 +3880,4 @@ SceneRoots:
   - {fileID: 623201389}
   - {fileID: 134765111}
   - {fileID: 1013817810}
+  - {fileID: 529603050}

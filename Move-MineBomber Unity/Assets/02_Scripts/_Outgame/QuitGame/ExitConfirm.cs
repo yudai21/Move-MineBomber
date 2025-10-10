@@ -1,17 +1,15 @@
-using Unity.VisualScripting;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class ExitConfirm : MonoBehaviour
 {
     [SerializeField] private GameObject endCanvas;
-    void Start()
-    { 
-        
-    }
 
     public void Quit()
     {
+#if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;
+#else
         Application.Quit();
-    }
+#endif
+        }
 }

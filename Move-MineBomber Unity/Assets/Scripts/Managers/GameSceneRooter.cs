@@ -4,11 +4,12 @@ using UnityEngine;
 using HighElixir;
 using Bomb.Inputs;
 using HighElixir.Pool;
-using System;
 using UnityEngine.Events;
+using System;
 
 namespace Bomb.Managers
 {
+    [DefaultExecutionOrder(-99)]
     public class GameSceneRooter : SingletonBehavior<GameSceneRooter>
     {
         [Header("Reference")]
@@ -18,9 +19,8 @@ namespace Bomb.Managers
         private GameSceneManager _gameManager = new();
         private ViewObjRooter _viewObjRooter;
         private InputController _inputController;
-#if UNITY_EDITOR
+
         [SerializeField]
-#endif
         private GameRule _rule;
         public GameRule Rule => _rule;
         public ViewObjRooter View => _viewObjRooter;
@@ -31,14 +31,19 @@ namespace Bomb.Managers
         public UnityEvent OnGameInvoked { get; private set; } = new();
         public void Invoke()
         {
-#if UNITY_EDITOR
-            //Debug.Log("AAAAAA");
-#endif
-            _gameManager.Invoke(_rule);
-            _viewObjRooter.Invoke(_gameManager.Board);
-            _inputController = new InputController(this);
-            OnGameInvoked?.Invoke();
-            GameAwaked = true;
+            Debug.Log("AAAAAA");
+            try
+            {
+                _gameManager.Invoke(_rule);
+                _viewObjRooter.Invoke(_gameManager.Board);
+                _inputController = new InputController(this);
+                OnGameInvoked?.Invoke();
+                GameAwaked = true;
+            }
+            catch (System.Exception ex)
+            {
+                Debug.Log(ex.ToString());
+            }
         }
 
         public void SetRule(GameRule rule)
