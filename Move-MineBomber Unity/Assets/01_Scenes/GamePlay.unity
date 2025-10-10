@@ -2292,7 +2292,7 @@ GameObject:
   - component: {fileID: 1227872264}
   - component: {fileID: 1227872263}
   m_Layer: 5
-  m_Name: BG_Canvas
+  m_Name: Background_Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3359,7 +3359,7 @@ GameObject:
   - component: {fileID: 1960988851}
   - component: {fileID: 1960988850}
   m_Layer: 0
-  m_Name: SceneAdditive
+  m_Name: GameEndJudgement
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3536,11 +3536,11 @@ SceneRoots:
   - {fileID: 1970965268}
   - {fileID: 529603050}
   - {fileID: 125625204}
-  - {fileID: 266831043}
   - {fileID: 1227872266}
   - {fileID: 687472180}
+  - {fileID: 266831043}
   - {fileID: 822079898}
   - {fileID: 1714156272}
-  - {fileID: 1743094435}
   - {fileID: 380314970}
+  - {fileID: 1743094435}
   - {fileID: 1960988851}
