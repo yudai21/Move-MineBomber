@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Linq;
+using Unity.VisualScripting;
+using UnityEngine.InputSystem.XR;
 
 namespace Bomb.Boards.Helpers
 {
@@ -156,6 +159,10 @@ namespace Bomb.Boards.Helpers
             return (minX, maxX, minY, maxY);
         }
 
+        public static int GetAroundBomb(this BoardManager board, MassInfo info)
+        {
+            return board.GetAroundMass(info.x, info.y).Count(a => a.type.Has(MassType.Bomb));
+        }
         /// <summary>最大スパンを取得（高さと幅の大きい方）</summary>
         private static int GetMaxSpanOfOnes(this BoardManager board)
         {

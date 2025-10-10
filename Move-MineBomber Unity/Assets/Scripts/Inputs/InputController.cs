@@ -12,7 +12,6 @@ namespace Bomb.Inputs
         public InputController(GameSceneRooter sceneManager)
         {
             _rooter = sceneManager;
-            OnHit += () => Debug.Log("Hit!!!");
         }
 
         public void Input(Vector2 pos, bool isLeft = true)

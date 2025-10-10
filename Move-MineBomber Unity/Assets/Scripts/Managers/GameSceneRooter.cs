@@ -50,11 +50,10 @@ namespace Bomb.Managers
             _viewObjRooter.SetCanvas(_canvas);
             Invoke();
         }
-
-        private void OnGUI()
-        {
-            
-        }
 #endif
+        private void OnApplicationQuit()
+        {
+            _gameManager.Dispose();
+        }
     }
 }

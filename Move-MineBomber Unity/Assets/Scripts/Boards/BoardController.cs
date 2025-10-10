@@ -7,12 +7,12 @@ using UnityEngine;
 
 namespace Bomb.Boards
 {
-    public class BoardController
+    public class BoardController : IDisposable
     {
         private BoardManager _boardManager = new();
         private FlagController _flagController;
         private MassManager _massManager;
-        private SlideHandler _slideHandler;
+        private SlideSystem _slideSystem;
 
         // 数値管理
         private int _bombRemaining = 0;
@@ -34,7 +34,7 @@ namespace Bomb.Boards
         {
             _massManager = new MassManager(this);
             _flagController = new(this);
-            _slideHandler = new(this);
+            _slideSystem = new(this);
         }
 
         public void Invoke(GameRule rule)
@@ -43,7 +43,9 @@ namespace Bomb.Boards
             _flagController.Init((int)(rule.FlagRate * Math.Pow(rule.MapSize, 2)));
             OnBoardRebuilt?.Invoke(_boardManager);
             _bombRemaining = BoardBuilder.Create(out _boardManager, rule);
-            _slideHandler.Invoke(rule);
+            _slideSystem.Invoke(rule);
+
+            OnMassHit += m => Debug.Log($"[Board]:Hitted. info:[{m.ToString()}]");
         }
 
         public void Pause(bool pause)
@@ -84,5 +86,10 @@ namespace Bomb.Boards
         public bool Hit(int x, int y) => _massManager.Hit(x, y);
         public void ToggleFlag(MassInfo info) => _flagController.ToggleFlag(info);
         public void ToggleFlag(int x, int y) => _flagController.ToggleFlag(x, y);
+
+        public void Dispose()
+        {
+            _slideSystem.Dispose();
+        }
     }
 }

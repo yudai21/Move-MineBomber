@@ -24,8 +24,11 @@ namespace Bomb.Views
         public void Invoke(BoardController controller)
         {
             _controller = controller;
+
+            // 各イベントの登録
             _controller.OnMassHit -= OnMassHit;
             _controller.OnMassHit += OnMassHit;
+
             _controller.OnFlagToggled -= OnFlagToggled;
             _controller.OnFlagToggled += OnFlagToggled;
 
@@ -77,8 +80,8 @@ namespace Bomb.Views
             int h = board.GetLength(1);
             if (mx < 0 || my < 0 || mx >= w || my >= h) return default;
 
-            var m = board[mx, my];
-            // ダミーは無効扱い（必要ならここで IsDummy を見て弾く）
+            var m = _controller.Board.GetMass(mx, my);
+            // ダミーは無効扱い
             if (m.IsDummy) return default;
 
             return m;
@@ -88,7 +91,7 @@ namespace Bomb.Views
         {
             if (results == null || results.Count == 0) return;
             if (_controller == null || _massScale <= 0f) return;
-
+            Debug.Log(_controller.Board.ToString());
             foreach (var result in results)
             {
                 // 古いマス位置に対応するViewerを探す
@@ -107,11 +110,10 @@ namespace Bomb.Views
             }
         }
 
-        private void SetMasses()
+        private void SetMasses(bool ignoreDirty = false)
         {
             if (_massScale <= 0f) return;
-            (int centerX, int centerY) = _controller.Board.GetCenter();
-            foreach (var mass in _controller.Board.GetAllMasses()) // 既定でダミー除外ならOK
+            foreach (var mass in _controller.Board.GetAllMasses())
             {
                 if (!_maps.TryGetValue((mass.x, mass.y), out var wr))
                 {
@@ -122,8 +124,9 @@ namespace Bomb.Views
                     };
                     _maps[(mass.x, mass.y)] = wr;
                 }
-                if (!wr.isDirty) continue;
-                wr.isDirty = false;
+                if (!ignoreDirty && !wr.isDirty) continue;
+                if (!ignoreDirty)
+                    wr.isDirty = false;
                 SetMass(wr.viewer, mass);
             }
         }
@@ -145,31 +148,48 @@ namespace Bomb.Views
 
         private void SetMass(MassViewer viewer, MassInfo info)
         {
-            (int centerX, int centerY) = _controller.Board.GetCenter();
-            float x = (info.x - centerX + _centerPos.x) * _massScale;
-            float y = (info.y - centerY + _centerPos.y) * _massScale;
-            viewer.transform.position = new Vector2(x, y);
+            viewer.transform.position = GetFromMassInfo(info);
             viewer.transform.localScale = Vector3.one * _massScale;
             viewer.UpdateMass(info);
+        }
+
+        private Vector2 GetFromMassInfo(MassInfo info)
+        {
+            (int cX, int cY) = _controller.Board.GetCenter();
+            var vec = new Vector2();
+            float x = (info.x - cX + _centerPos.x) * _massScale;
+            float y = (info.y - cY + _centerPos.y) * _massScale;
+            vec.x = x;
+            vec.y = y;
+            return vec;
         }
         //
         private void Awake()
         {
-            _pool = new Pool<MassViewer>(_pref, 100, transform, false);
+            var poolSize = BoardManager.VirtualSize ^ 2;
+            _pool = new Pool<MassViewer>(_pref, poolSize, transform, false);
         }
 
 #if UNITY_EDITOR
         private void OnDrawGizmosSelected()
         {
-            (int cX, int cY) = _controller.Board.GetCenter();
+            if (!Application.isPlaying) return;
             var mass = _controller.Board.GetAllMasses();
             foreach (var m in mass)
             {
-                float x = (m.x - cX + _centerPos.x) * _massScale;
-                float y = (m.y - cY + _centerPos.y) * _massScale;
                 Gizmos.color = Color.cyan;
-                Gizmos.DrawSphere(new Vector2(x, y), 0.2f);
+                Gizmos.DrawSphere(GetFromMassInfo(m), 0.2f);
             }
+        }
+
+        public void Repaint()
+        {
+            foreach (var m in _maps.Values)
+            {
+                _pool.Release(m.viewer);
+            }
+            _maps.Clear();
+            SetMasses(true);
         }
 #endif
     }
