@@ -12,7 +12,6 @@ namespace Bomb.Managers
         [Header("Reference")]
         [SerializeField] private BoardViewer _viewer;
         [SerializeField] private Canvas _canvas;
-
         private GameSceneManager _gameManager = new();
         private ViewObjRooter _viewObjRooter;
         private InputController _inputController;

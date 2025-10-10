@@ -1,5 +1,7 @@
 ﻿using Bomb.Boards.Flagged;
 using Bomb.Datas;
+using Bomb.Managers;
+using Bomb.Views;
 using System;
 
 namespace Bomb.Boards

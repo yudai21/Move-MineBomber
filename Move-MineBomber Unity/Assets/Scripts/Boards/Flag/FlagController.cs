@@ -9,6 +9,7 @@ namespace Bomb.Boards.Flagged
         private int _flagsRemaining = 0;
 
         public int FlagsRemaining => _flagsRemaining;
+        public event Action<int> OnFlagsChanged;
 
         public FlagController(BoardController controller)
         {
@@ -36,6 +37,8 @@ namespace Bomb.Boards.Flagged
                 _flagsRemaining++;
                 _boardController.Board.CopyMassState(info.x, info.y, info);
                 _boardController.NotifyFlagCountChanged(_flagsRemaining);
+                OnFlagsChanged?.Invoke(_flagsRemaining);
+
                 _boardController.NotifyFlagToggled(info, false);
                 return true;
             }
@@ -50,7 +53,7 @@ namespace Bomb.Boards.Flagged
             info.type |= MassType.Flagged;
             _flagsRemaining--;
             _boardController.Board.CopyMassState(info.x, info.y, info);
-            _boardController.NotifyFlagCountChanged(_flagsRemaining);
+            _boardController.NotifyFlagCountChanged(_flagsRemaining);            
             _boardController.NotifyFlagToggled(info, true);
             Debug.Log("Flag");
             return true;
