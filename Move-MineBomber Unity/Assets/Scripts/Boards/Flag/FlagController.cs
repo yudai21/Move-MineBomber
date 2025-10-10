@@ -51,7 +51,7 @@ namespace Bomb.Boards.Flagged
             info.type |= MassType.Flagged;
             _flagsRemaining--;
             Commit(info, FlagToggleResult.Placed);
-            Debug.Log( FlagToggleResult.Placed);
+            //Debug.Log( FlagToggleResult.Placed);
             return FlagToggleResult.Placed;
         }
 

@@ -1099,8 +1099,8 @@ MonoBehaviour:
         m_CallState: 2
       - m_Target: {fileID: 192892127}
         m_TargetAssemblyTypeName: SceneLoadRequest, Assembly-CSharp
-        m_MethodName: LoadScene
-        m_Mode: 5
+        m_MethodName: RetryGame
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine

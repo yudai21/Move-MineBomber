@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 
 /// <summary>
@@ -23,7 +23,7 @@ public class ClickToWin : MonoBehaviour
 
     void GameClear()
     {
-        Debug.Log("ゲームクリア！"); // ゲームクリア処理
+        //Debug.Log("ゲームクリア！"); // ゲームクリア処理
         _gameTimer.IsRunning = false;
         SceneManager.LoadScene("TestClearScene");
     }

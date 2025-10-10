@@ -27,6 +27,10 @@ namespace Bomb.Views
 #endif
 
         // ===== 公開API =====
+        public void SetData(Canvas canvas)
+        {
+            _uiCanvas = canvas;
+        }
         public void UpdateMass(MassInfo info)
         {
             EnsureBlocks();

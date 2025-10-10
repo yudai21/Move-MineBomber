@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
 using UnityEngine.SceneManagement;
@@ -13,8 +13,8 @@ public class FadeSystem : MonoBehaviour
 
     void Start()
     {
-        Debug.Log("load:" + LoadSceneName);
-        Debug.Log("unload:" + UnLoadSceneName);
+        //Debug.Log("load:" + LoadSceneName);
+        //Debug.Log("unload:" + UnLoadSceneName);
         _fadeImage.DOFade(1f, _fadeDuration).SetEase(_easeType).OnComplete(() =>
         {
             if (SceneLoadRequest.AllSceneDelete)

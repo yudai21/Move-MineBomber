@@ -121,7 +121,9 @@ namespace HighElixir.Timers.Internal
                 }
                 catch (Exception ex)
                 {
+#if UNITY_EDITOR
                     UnityEngine.Debug.LogError($"[HighElixir.Timers] Timer OnFinished callback threw an exception: {ex}");
+#endif
                 }
             }
         }

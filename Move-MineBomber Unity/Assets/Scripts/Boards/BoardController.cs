@@ -19,7 +19,7 @@ namespace Bomb.Boards
 
         public BoardManager Board => _boardManager;
         public MassManager MassManager => _massManager;
-
+        public FlagController FlagController => _flagController;
         //
         public int BombRemaining => _bombRemaining;
         // 
@@ -45,7 +45,7 @@ namespace Bomb.Boards
             _bombRemaining = BoardBuilder.Create(out _boardManager, rule);
             _slideSystem.Invoke(rule);
 
-            OnMassHit += m => Debug.Log($"[Board]:Hitted. info:[{m.ToString()}]");
+            //OnMassHit += m => Debug.Log($"[Board]:Hitted. info:[{m.ToString()}]");
         }
 
         public void Pause(bool pause)
@@ -56,14 +56,13 @@ namespace Bomb.Boards
         public void NotifyBombHit(MassInfo info)
         {
             _bombRemaining--;
-#if UNITY_EDITOR
-            if (BombRemaining > 0)
-                Debug.Log($"Bomb Found: {BombRemaining}");
-            else
+            //if (BombRemaining > 0)
+            //    Debug.Log($"Bomb Found: {BombRemaining}");
+            if (_bombRemaining <= 0) 
             {
-                Debug.Log("Game Clear");
+                //Debug.Log("Game Clear");
+                GameManager.Instance.CurrentGameState = GameState.GameClear;
             }
-#endif
             OnBombHit?.Invoke(info);
         }
         public void NotifyFlagCountChanged(int remaining)

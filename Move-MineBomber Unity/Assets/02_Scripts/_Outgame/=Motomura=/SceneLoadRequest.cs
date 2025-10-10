@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
@@ -22,8 +22,14 @@ public class SceneLoadRequest : MonoBehaviour
     {
         AllSceneDelete = true;
         Scene scene = SceneManager.GetActiveScene();
-        Debug.Log("リトライ" + scene.name);
+        //Debug.Log("リトライ" + scene.name);
         FadeSystem.LoadSceneName = scene.name;
 
+    }
+
+    public void RetryGame()
+    {
+        GameManager.Instance.CurrentGameState = GameState.Playing;
+        LoadScene("GamePlay");
     }
 }

@@ -6,7 +6,7 @@ namespace Bomb.Boards
 {
     public class BoardManager
     {
-        public static readonly int VirtualHeight = 9;
+        public static readonly int VirtualHeight = 13;
         public static readonly int VirtualWidth = 18;
 
         private MassInfo[,] _board = new MassInfo[VirtualHeight, VirtualWidth];

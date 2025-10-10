@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using UnityEngine;
 
 public enum GameState
@@ -27,7 +27,7 @@ public class GameManager : MonoBehaviour
         {
             if (currentGameState != value)
             {
-                Debug.Log($"GameState changed: {currentGameState} -> {value}");
+                //Debug.Log($"GameState changed: {currentGameState} -> {value}");
                 currentGameState = value;
                 OnGameStateChanged?.Invoke(currentGameState);
             }

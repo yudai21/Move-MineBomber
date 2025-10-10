@@ -10,7 +10,7 @@ namespace Bomb.Boards.Slides
         public static List<MassInfo> GetRandLine(this BoardManager board)
         {
             var bounds = board.GetActiveBounds();
-            Debug.Log($"minX:{bounds.minX}, maxX:{bounds.maxX}, minY:{bounds.minY}, maxY:{bounds.maxY}");
+            //Debug.Log($"minX:{bounds.minX}, maxX:{bounds.maxX}, minY:{bounds.minY}, maxY:{bounds.maxY}");
             var masses = new List<MassInfo>();
             if (RandomExtensions.Percent(50f))
             {

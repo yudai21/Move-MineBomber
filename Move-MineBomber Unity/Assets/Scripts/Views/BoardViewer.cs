@@ -17,6 +17,7 @@ namespace Bomb.Views
         [SerializeField] private Vector2 _centerPos = Vector2.zero; // 画面上の原点オフセット（マス単位）
         [SerializeField] private float _massScale = 1.0f;           // 1マスのスケール（ワールド単位）
         [SerializeField] private MassViewer _pref;
+        [SerializeField] private Canvas _canvas;
 
         private Pool<MassViewer> _pool;
         private BoardController _controller;
@@ -122,6 +123,7 @@ namespace Bomb.Views
                         viewer = _pool.Get(),
                         isDirty = true
                     };
+                    wr.viewer.SetData(_canvas);
                     _maps[(mass.x, mass.y)] = wr;
                 }
                 if (!ignoreDirty && !wr.isDirty) continue;

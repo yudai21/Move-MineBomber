@@ -45,7 +45,7 @@ namespace Bomb.Boards.Slides
 
                         board.MoveMass(info, @new);
                         res.Add(new SlideResult(@new, info));
-                        Debug.Log(@new.ToString());
+                        //Debug.Log(@new.ToString());
                         break;
                     }
                 }

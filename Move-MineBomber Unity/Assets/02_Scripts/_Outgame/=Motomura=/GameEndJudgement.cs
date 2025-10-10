@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class GameEndJudgement : MonoBehaviour
@@ -16,14 +16,14 @@ public class GameEndJudgement : MonoBehaviour
         {
             case GameState.GameClear:
                 ClearSceneLoad();
-                Debug.Log("<color=Green>クリア判定</color>");
+                //Debug.Log("<color=Green>クリア判定</color>");
                 break;
             case GameState.GameOver:
                 GameOverSceneLoad();
-                Debug.Log("<color=Red>ゲームオーバー判定</color>");
+                //Debug.Log("<color=Red>ゲームオーバー判定</color>");
                 break;
             default:
-                Debug.Log("<color=Yellow>どちらでもない</color> 現在→"+ GameManager.Instance.currentGameState);
+                //Debug.Log("<color=Yellow>どちらでもない</color> 現在→"+ GameManager.Instance.currentGameState);
                 break;
         }
     }

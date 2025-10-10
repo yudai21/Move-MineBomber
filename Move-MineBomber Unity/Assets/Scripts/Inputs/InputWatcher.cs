@@ -21,7 +21,7 @@ namespace Bomb.Inputs
         }
         public void OnRightClick(InputValue value)
         {
-            Debug.Log("Right Click");
+            //Debug.Log("Right Click");
             var iC = GameSceneRooter.instance.InputController;
             iC.Input(_vec, false);
         }

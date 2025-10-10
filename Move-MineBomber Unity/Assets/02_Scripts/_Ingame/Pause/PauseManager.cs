@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 public class PauseManager : MonoBehaviour
@@ -18,16 +18,16 @@ public class PauseManager : MonoBehaviour
     {
         isActive = !isActive;
         pauseCanvas.SetActive(isActive);
-        Debug.Log("Click");
+        //Debug.Log("Click");
 
         if (isActive)
         {
-            Debug.Log("Active");
+            //Debug.Log("Active");
             GameManager.Instance.CurrentGameState = GameState.Paused;
         }
         else
         {
-            Debug.Log("NotActive");
+            //Debug.Log("NotActive");
             GameManager.Instance.CurrentGameState = GameState.Playing;
         }
     }
