@@ -1,4 +1,4 @@
-using Bomb.Managers;
+﻿using Bomb.Managers;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
@@ -12,7 +12,7 @@ public class HandCountManager : MonoBehaviour
     private void Awake()
     {
         var gr = GameSceneRooter.instance;
-        gr.OnGameInvoke.AsObservable().Subscribe(_ =>
+        gr.OnGameInvoked.AsObservable().Subscribe(_ =>
         {
             maxMoves = gr.Rule.Handling;
             gr.InputController.OnHit += DecreaceHandCount;

@@ -3,8 +3,9 @@ using Bomb.Views;
 using UnityEngine;
 using HighElixir;
 using Bomb.Inputs;
-using HighElixir.Timers;
 using HighElixir.Pool;
+using System;
+using UnityEngine.Events;
 
 namespace Bomb.Managers
 {
@@ -21,14 +22,18 @@ namespace Bomb.Managers
         [SerializeField]
 #endif
         private GameRule _rule;
+        public GameRule Rule => _rule;
         public ViewObjRooter View => _viewObjRooter;
         public InputController InputController => _inputController;
         public GameSceneManager Manager => _gameManager;
+
+        public UnityEvent OnGameInvoked { get; private set; } = new();
         public void Invoke()
         {
             _gameManager.Invoke(_rule);
             _viewObjRooter.Invoke(_gameManager.Board);
             _inputController = new InputController(this);
+            OnGameInvoked?.Invoke();
         }
 
         public void SetRule(GameRule rule)
