@@ -1,6 +1,7 @@
 ﻿using Bomb.Boards;
+using Bomb.Boards.Flagged;
+using Bomb.Datas;
 using HighElixir.Pool;
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -16,30 +17,23 @@ namespace Bomb.Views
         [SerializeField] private Vector2 _centerPos = Vector2.zero; // 画面上の原点オフセット（マス単位）
         [SerializeField] private float _massScale = 1.0f;           // 1マスのスケール（ワールド単位）
         [SerializeField] private MassViewer _pref;
-        [SerializeField] private PoolObj _poolObj; // TMPro
 
         private Pool<MassViewer> _pool;
         private BoardController _controller;
         private Dictionary<(int x, int y), MassWrapper> _maps = new();
-        public Pool<GameObject> Pool => _poolObj.Pool;
         public void Invoke(BoardController controller)
         {
-            Action<MassInfo> ac = m =>
-            {
-                if (_maps.TryGetValue((m.x, m.y), out var wrapper))
-                {
-                    wrapper.isDirty = true;
-                }
-            };
             _controller = controller;
-            _controller.OnMassHit += ac;
-            _controller.OnFlagToggled += (m, _) =>
-            {
-                if (_maps.TryGetValue((m.x, m.y), out var wrapper))
-                {
-                    wrapper.isDirty = true;
-                }
-            };
+
+            // 各イベントの登録
+            _controller.OnMassHit -= OnMassHit;
+            _controller.OnMassHit += OnMassHit;
+
+            _controller.OnFlagToggled -= OnFlagToggled;
+            _controller.OnFlagToggled += OnFlagToggled;
+
+            _controller.OnBoardMove -= UpdateMovedBoard;
+            _controller.OnBoardMove += UpdateMovedBoard;
         }
 
         /// <summary>
@@ -49,7 +43,7 @@ namespace Bomb.Views
         {
             if (_controller == null) return;
 
-            SetMass();
+            SetMasses();
             // 例：
             // 1) _boardManager.GetAllMasses()でアクティブマスを走査
             // 2) 各マスの表示(色/スプライト/エフェクト)を更新
@@ -77,7 +71,7 @@ namespace Bomb.Views
 
             int mx = Mathf.RoundToInt(gx + centerX - _centerPos.x);
             int my = Mathf.RoundToInt(gy + centerY - _centerPos.y);
-            Debug.Log($"Checked: x[{mx}], y[{my}]");
+            //Debug.Log($"Checked: x[{mx}], y[{my}]");
             // 境界チェック
             var board = _controller.Board.Board;
             if (board == null) return default;
@@ -86,18 +80,40 @@ namespace Bomb.Views
             int h = board.GetLength(1);
             if (mx < 0 || my < 0 || mx >= w || my >= h) return default;
 
-            var m = board[mx, my];
-            // ダミーは無効扱い（必要ならここで IsDummy を見て弾く）
+            var m = _controller.Board.GetMass(mx, my);
+            // ダミーは無効扱い
             if (m.IsDummy) return default;
 
             return m;
         }
 
-        private void SetMass()
+        public void UpdateMovedBoard(List<SlideResult> results)
+        {
+            if (results == null || results.Count == 0) return;
+            if (_controller == null || _massScale <= 0f) return;
+            Debug.Log(_controller.Board.ToString());
+            foreach (var result in results)
+            {
+                // 古いマス位置に対応するViewerを探す
+                if (!_maps.TryGetValue((result.Old.x, result.Old.y), out var wrapper))
+                    continue;
+
+                // 座標計算
+                SetMass(wrapper.viewer, result.New);
+
+                // 辞書キーを更新（旧位置→新位置）
+                _maps.Remove((result.Old.x, result.Old.y));
+                _maps[(result.New.x, result.New.y)] = wrapper;
+
+                // Dirtyフラグもリセット
+                wrapper.isDirty = false;
+            }
+        }
+
+        private void SetMasses(bool ignoreDirty = false)
         {
             if (_massScale <= 0f) return;
-            (int centerX, int centerY) = _controller.Board.GetCenter();
-            foreach (var mass in _controller.Board.GetAllMasses()) // 既定でダミー除外ならOK
+            foreach (var mass in _controller.Board.GetAllMasses())
             {
                 if (!_maps.TryGetValue((mass.x, mass.y), out var wr))
                 {
@@ -108,21 +124,73 @@ namespace Bomb.Views
                     };
                     _maps[(mass.x, mass.y)] = wr;
                 }
-                if (!wr.isDirty) continue;
-                wr.isDirty = false;
-                float x = (mass.x - centerX + _centerPos.x) * _massScale;
-                float y = (mass.y - centerY + _centerPos.y) * _massScale;
-                var go = wr.viewer;
-                go.transform.position = new Vector2(x, y);
-                go.transform.localScale = Vector3.one * _massScale;
-                go.UpdateMass(mass);
-                wr.viewer = go;
+                if (!ignoreDirty && !wr.isDirty) continue;
+                if (!ignoreDirty)
+                    wr.isDirty = false;
+                SetMass(wr.viewer, mass);
             }
         }
 
+        private void OnMassHit(MassInfo info)
+        {
+            if (_maps.TryGetValue((info.x, info.y), out var wrapper))
+            {
+                wrapper.isDirty = true;
+            }
+        }
+        private void OnFlagToggled(MassInfo info, FlagController.FlagToggleResult _)
+        {
+            if (_maps.TryGetValue((info.x, info.y), out var wrapper))
+            {
+                wrapper.isDirty = true;
+            }
+        }
+
+        private void SetMass(MassViewer viewer, MassInfo info)
+        {
+            viewer.transform.position = GetFromMassInfo(info);
+            viewer.transform.localScale = Vector3.one * _massScale;
+            viewer.UpdateMass(info);
+        }
+
+        private Vector2 GetFromMassInfo(MassInfo info)
+        {
+            (int cX, int cY) = _controller.Board.GetCenter();
+            var vec = new Vector2();
+            float x = (info.x - cX + _centerPos.x) * _massScale;
+            float y = (info.y - cY + _centerPos.y) * _massScale;
+            vec.x = x;
+            vec.y = y;
+            return vec;
+        }
+        //
         private void Awake()
         {
-            _pool = new Pool<MassViewer>(_pref, 100, transform, false);
+            var poolSize = BoardManager.VirtualSize ^ 2;
+            _pool = new Pool<MassViewer>(_pref, poolSize, transform, false);
         }
+
+#if UNITY_EDITOR
+        private void OnDrawGizmosSelected()
+        {
+            if (!Application.isPlaying) return;
+            var mass = _controller.Board.GetAllMasses();
+            foreach (var m in mass)
+            {
+                Gizmos.color = Color.cyan;
+                Gizmos.DrawSphere(GetFromMassInfo(m), 0.2f);
+            }
+        }
+
+        public void Repaint()
+        {
+            foreach (var m in _maps.Values)
+            {
+                _pool.Release(m.viewer);
+            }
+            _maps.Clear();
+            SetMasses(true);
+        }
+#endif
     }
 }

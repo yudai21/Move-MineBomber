@@ -28,6 +28,10 @@ public class SoundManager : MonoBehaviour
     //クロスフェード時間
     public const float CROSS_FADE_TIME = 1f;
 
+    //ボリューム関連
+    public float BGMVolume=0.1f;
+    public float SEVolume = 0.2f;
+
     public AudioClip[] BGMClips;
     public AudioClip[] SEClips;
 
@@ -69,9 +73,18 @@ public class SoundManager : MonoBehaviour
 
     void Update()
     {
-        
-    }
+        //ボリューム設定
+        if(!isCrossFading)
+        {
+            BGM_Sources[0].volume = BGMVolume;
+            BGM_Sources[1].volume = BGMVolume;
+        }
 
+        foreach(AudioSource source in SE_Sources)
+        {
+            source.volume = SEVolume;
+        }
+    }
 
     //BGM再生
     public void PlayBGM(BGMType bgmtype,bool loopFlg=true)

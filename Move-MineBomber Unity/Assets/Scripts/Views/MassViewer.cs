@@ -1,7 +1,11 @@
 ﻿using Bomb.Boards;
 using Bomb.Managers;
 using TMPro;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace Bomb.Views
 {
@@ -60,8 +64,7 @@ namespace Bomb.Views
             {
                 if (_countText != null)
                 {
-                    _countText.gameObject.SetActive(false);
-                    GameSceneRooter.instance.View.Board.Pool.Release(_countText.gameObject);
+                    GameSceneRooter.instance.View.Pool.Release(_countText);
                     _countText = null;
                 }
             }
@@ -71,7 +74,7 @@ namespace Bomb.Views
         {
             if (_countText == null)
             {
-                var obj = GameSceneRooter.instance.View.Board.Pool.Get().GetComponent<TMP_Text>();
+                var obj = GameSceneRooter.instance.View.Pool.Get();
                 _countText = obj;
                 if (_uiRoot != null)
                     _countText.rectTransform.SetParent(_uiRoot, worldPositionStays: false);
@@ -102,5 +105,12 @@ namespace Bomb.Views
         {
             if (_mpb == null) _mpb = new MaterialPropertyBlock();
         }
+#if UNITY_EDITOR
+        private void OnDrawGizmos()
+        {
+            Handles.color = Color.white;
+            Handles.Label(transform.position, $"({_massInfo.x},{_massInfo.y})");
+        }
+#endif
     }
 }

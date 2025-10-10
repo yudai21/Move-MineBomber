@@ -1,16 +1,14 @@
 ﻿using Bomb.Boards;
 using Bomb.Datas;
-using UnityEngine;
+using System;
 
 namespace Bomb.Managers
 {
-    public class GameSceneManager
+    public class GameSceneManager : IDisposable
     {
         private BoardController _board;
-
         public BoardController Board => _board;
 
-        public int BombRemaining => _board.BombRemaining;
         public GameSceneManager()
         {
             _board = new BoardController();
@@ -18,17 +16,11 @@ namespace Bomb.Managers
         public void Invoke(GameRule rule)
         {
             _board.Invoke(rule);
-            Debug.Log("Bomb Remaining : " + BombRemaining);
-            _board.OnBombHit += _ =>
-            {
-                if (BombRemaining > 0)
-                    Debug.Log($"{BombRemaining}");
-                else
-                {
-                    Debug.Log("Game Clear");
-                }
-            };
         }
 
+        public void Dispose()
+        {
+            _board.Dispose();
+        }
     }
 }

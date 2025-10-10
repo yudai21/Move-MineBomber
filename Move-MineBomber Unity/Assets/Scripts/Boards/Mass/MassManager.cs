@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Bomb.Boards.Helpers;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Bomb.Boards
@@ -42,7 +43,7 @@ namespace Bomb.Boards
                 res = true;
                 current.type |= MassType.Opened;
                 var around = _controller.Board.GetAroundMass(current.x, current.y);
-                int bombs = around.Count(a => (a.type & MassType.Bomb) != 0);
+                int bombs = _controller.Board.GetAroundBomb(current);
                 if (bombs > 0)
                 {
                     current.aroundBombCount = bombs;

@@ -18,5 +18,11 @@ namespace Bomb.Boards
                 return (type == MassType.None);
             }
         }
+
+        public override string ToString()
+        {
+            return $"({x},{y}) Type:{type}, Around:{aroundBombCount}";
+        }
+
     }
 }
