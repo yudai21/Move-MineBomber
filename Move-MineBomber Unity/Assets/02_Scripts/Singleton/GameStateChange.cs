@@ -1,42 +1,31 @@
-using System.Collections;
+﻿using Cysharp.Threading.Tasks;
+using System;
 using UnityEngine;
+using Zenject;
 
 /// <summary>
 /// シーンに配置してゲームの状態を切り替える
 /// </summary>
 public class GameStateChange : MonoBehaviour
 {
+    [Inject] private GameStateHolder _stateHolder;
     [Header("シーンの初期ゲーム状態")]
-    [SerializeField] private GameState gameState = GameState.None;
+    [SerializeField] private GameState _gameState = GameState.None;
 
     [Header("状態切り替えまでの遅延時間")]
-    [SerializeField] private bool DelayChange = false;
-    [SerializeField] private float DelayTime = 0;
+    [SerializeField, Min(0)] private float _delayTime = 0;
 
-
-    void Start()
+    private async UniTask ChangeAsync()
     {
-        if (DelayChange == false)
-        {
-            StateChange();
-        }
+        await UniTask.Delay(TimeSpan.FromSeconds(_delayTime));
+        _stateHolder.UpdateState(_gameState);
+    }
+
+    private void Start()
+    {
+        if (_delayTime == -1)
+            _stateHolder.UpdateState(_gameState);
         else
-        {
-            StartCoroutine(DelayStateChange());
-        }
-    }
-
-    private void StateChange()
-    {
-        GameManager.Instance.CurrentGameState = gameState;
-    }
-
-    private IEnumerator DelayStateChange()
-    {
-        yield return new WaitForSeconds(DelayTime);
-
-        StateChange();
-
-        yield return null;
+            ChangeAsync().Forget();
     }
 }

@@ -5,13 +5,9 @@ using UnityEngine.EventSystems;
 
 public class SceneLoadRequest : MonoBehaviour
 {
-    public static bool AllSceneDelete = false;
-
     public void LoadScene(string sceneName)
     {
-        SceneManager.LoadSceneAsync("Fade", LoadSceneMode.Additive);
-        FadeSystem.LoadSceneName = sceneName;
-        FadeSystem.UnLoadSceneName = this.gameObject.scene.name;
+        LoaderWithFade.LoadWithFade(sceneName);
     }
     public void Button_Interactable()
     {
@@ -20,16 +16,13 @@ public class SceneLoadRequest : MonoBehaviour
 
     public void Return()
     {
-        AllSceneDelete = true;
         Scene scene = SceneManager.GetActiveScene();
         //Debug.Log("リトライ" + scene.name);
         FadeSystem.LoadSceneName = scene.name;
-
     }
 
     public void RetryGame()
     {
-        GameManager.Instance.CurrentGameState = GameState.Playing;
-        LoadScene("GamePlay");
+        LoaderWithFade.LoadWithFade("GamePlay");
     }
 }

@@ -1,4 +1,5 @@
 ﻿using HighElixir;
+using HighElixir.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -29,15 +30,15 @@ namespace Bomb.Boards.Slides
             var dir = new Vector2Int();
             if (enableDiagonal)
             {
-                dir.x = RandomExtensions.NextOne();
-                dir.y = RandomExtensions.NextOne();
+                dir.x = RandomExtensions.GetDir();
+                dir.y = RandomExtensions.GetDir();
             }
             else
             {
-                if (RandomExtensions.NextBool())
-                    dir.x = RandomExtensions.NextOne();
+                if (RandomExtensions.Chance(0.5))
+                    dir.x = RandomExtensions.GetDir();
                 else
-                    dir.y = RandomExtensions.NextOne();
+                    dir.y = RandomExtensions.GetDir();
             }
             if (distance == int.MaxValue)
                 distance = RandomExtensions.Rand(-5, 5);

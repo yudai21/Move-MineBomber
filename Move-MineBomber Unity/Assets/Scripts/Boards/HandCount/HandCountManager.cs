@@ -1,12 +1,18 @@
 ﻿using Bomb.Managers;
+using Bomb.Repository;
 using TMPro;
 using UniRx;
 using UnityEngine;
+using Zenject;
 
 namespace Bomb.Views
 {
     public class HandCountManager : MonoBehaviour
     {
+        [Inject] private GameStateHolder _gameStateHolder;
+        [Inject] private GameSceneRooter _gameSceneRooter;
+        [Inject] private GameDataRepository _repo;
+
         [SerializeField] private TMP_Text _text;
         private int maxMoves = 10;      // 最大手数（制限）
 
@@ -14,14 +20,13 @@ namespace Bomb.Views
         public int MaxMoves => maxMoves;
         private void Awake()
         {
-            var gr = GameSceneRooter.instance;
-            if (gr.GameAwaked)
+            if (_gameSceneRooter.GameAwaked)
             {
                 Subscribe();
             }
             else
             {
-                gr.OnGameInvoked.AsObservable().Subscribe(_ =>
+                _gameSceneRooter.OnGameInvoked.AsObservable().Subscribe(_ =>
                 {
                     Subscribe();
                 }).AddTo(this);
@@ -30,10 +35,9 @@ namespace Bomb.Views
 
         private void Subscribe()
         {
-            var gr = GameSceneRooter.instance;
-            maxMoves = gr.Rule.Handling;
+            maxMoves = _repo.CurrentRule.Handling;
             _text.SetText(maxMoves.ToString());
-            gr.InputController.OnHit += DecreaceHandCount;
+            _gameSceneRooter.InputController.OnHit += DecreaceHandCount;
         }
         private void DecreaceHandCount()
         {
@@ -42,7 +46,7 @@ namespace Bomb.Views
             _text.SetText(maxMoves.ToString());
             if (maxMoves <= 0)
             {
-                GameManager.Instance.CurrentGameState = GameState.GameOver;
+                _gameStateHolder.UpdateState(GameState.GameOver);
             }
         }
     }

@@ -1,4 +1,6 @@
-﻿using Bomb.Managers;
+﻿using Bomb.Boards;
+using Bomb.Managers;
+using Bomb.Views;
 using System;
 using UnityEngine;
 
@@ -6,25 +8,27 @@ namespace Bomb.Inputs
 {
     public class InputController
     {
-        private GameSceneRooter _rooter;
+        private BoardController _cont;
+        private ViewObjRooter _view;
 
         public event Action OnHit;
-        public InputController(GameSceneRooter sceneManager)
+
+        public InputController(BoardController cont, ViewObjRooter view)
         {
-            _rooter = sceneManager;
+            _cont = cont;
+            _view = view;
         }
 
         public void Input(Vector2 pos, bool isLeft = true)
         {
-            // なんやかんや判定
-            var mass = _rooter.View.GetInfoFromPosition(pos);
+            var mass = _view.GetInfoFromPosition(pos);
             if (isLeft)
             {
-                if (_rooter.Manager.Board.Hit(mass))
+                if (_cont.Hit(mass))
                     OnHit?.Invoke();
             }
             else
-                _rooter.Manager.Board.ToggleFlag(mass);
+                _cont.ToggleFlag(mass);
         }
     }
 }

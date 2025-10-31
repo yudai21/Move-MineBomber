@@ -1,7 +1,8 @@
 ﻿using Bomb.Boards;
-using HighElixir.Pool;
+using HighElixir.Unity.Pools;
 using TMPro;
 using UnityEngine;
+using Zenject;
 
 namespace Bomb.Views
 {
@@ -13,21 +14,23 @@ namespace Bomb.Views
     /// </summary>
     public class ViewObjRooter
     {
-        private BoardViewer _board;
+        [Inject] private BoardViewer _board;
+        [Inject] private TextPool _textPool;
         private Camera _camera;              // 3Dワールドを映すカメラ（必須）
         private Canvas _canvas;              // UIキャンバス
         private RectTransform _canvasRect;   // キャッシュ
-        private Pool<TMP_Text> _textPool;
         public BoardViewer Board => _board;
         public Camera Camera => _camera;
         public Canvas Canvas => _canvas;
-        public Pool<TMP_Text> Pool => _textPool;
+        public TextPool Pool => _textPool;
         public bool IsReady => _board != null && _camera != null && _canvasRect != null;
 
-        public ViewObjRooter(BoardViewer boardViewer, Pool<TMP_Text> textPool)
+        public ViewObjRooter(BoardViewer boardViewer, TextPool textPool, Canvas canvas)
         {
             _board = boardViewer;
             _textPool = textPool;
+            _canvas = canvas;
+            _canvasRect = canvas != null ? canvas.GetComponent<RectTransform>() : null;
         }
 
         public void SetCamera(Camera camera)
@@ -35,10 +38,8 @@ namespace Bomb.Views
             _camera = camera;
         }
 
-        public void SetCanvas(Canvas canvas)
+        public void SetCanvas()
         {
-            _canvas = canvas;
-            _canvasRect = canvas != null ? canvas.GetComponent<RectTransform>() : null;
         }
 
         public void Invoke(BoardController controller)

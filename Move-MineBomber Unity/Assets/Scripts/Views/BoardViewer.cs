@@ -1,7 +1,8 @@
 ﻿using Bomb.Boards;
 using Bomb.Boards.Flagged;
 using Bomb.Datas;
-using HighElixir.Pool;
+using DG.Tweening;
+using HighElixir.Unity.Pools;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -13,13 +14,19 @@ namespace Bomb.Views
         {
             public MassViewer viewer;
             public bool isDirty;
+            public bool isBlockedInteract; // クリックを拒否するかどうか
         }
         [SerializeField] private Vector2 _centerPos = Vector2.zero; // 画面上の原点オフセット（マス単位）
+        [SerializeField] private float _massScaleObj = 1f; //追加の補正
         [SerializeField] private float _massScale = 1.0f;           // 1マスのスケール（ワールド単位）
         [SerializeField] private MassViewer _pref;
         [SerializeField] private Canvas _canvas;
 
-        private Pool<MassViewer> _pool;
+        // DOTween
+        [Header("DOTween")]
+        [SerializeField] private float _duration = 1.0f;
+
+        private ObjectPool<MassViewer> _pool;
         private BoardController _controller;
         private Dictionary<(int x, int y), MassWrapper> _maps = new();
         public void Invoke(BoardController controller)
@@ -84,7 +91,7 @@ namespace Bomb.Views
             var m = _controller.Board.GetMass(mx, my);
             // ダミーは無効扱い
             if (m.IsDummy) return default;
-
+            if (_maps.TryGetValue((m.x, m.y), out var wr) && wr.isBlockedInteract) return default;
             return m;
         }
 
@@ -100,7 +107,7 @@ namespace Bomb.Views
                     continue;
 
                 // 座標計算
-                SetMass(wrapper.viewer, result.New);
+                SetMassWithDOTween(wrapper, result.New);
 
                 // 辞書キーを更新（旧位置→新位置）
                 _maps.Remove((result.Old.x, result.Old.y));
@@ -123,7 +130,6 @@ namespace Bomb.Views
                         viewer = _pool.Get(),
                         isDirty = true
                     };
-                    wr.viewer.SetData(_canvas);
                     _maps[(mass.x, mass.y)] = wr;
                 }
                 if (!ignoreDirty && !wr.isDirty) continue;
@@ -151,10 +157,21 @@ namespace Bomb.Views
         private void SetMass(MassViewer viewer, MassInfo info)
         {
             viewer.transform.position = GetFromMassInfo(info);
-            viewer.transform.localScale = Vector3.one * _massScale;
+            viewer.transform.localScale = Vector3.one * _massScale * _massScaleObj;
             viewer.UpdateMass(info);
         }
-
+        private void SetMassWithDOTween(MassWrapper wp, MassInfo info)
+        {
+            wp.isBlockedInteract = true;
+            var tPos = GetFromMassInfo(info);
+            wp.viewer.transform.DOMove(tPos, _duration).OnComplete(() =>
+            {
+                wp.isBlockedInteract = false;
+                wp.viewer.UpdateMass(info);
+            });
+            wp.viewer.transform.localScale = Vector3.one * _massScale * _massScaleObj;
+            wp.viewer.UpdateMass(info);
+        }
         private Vector2 GetFromMassInfo(MassInfo info)
         {
             (int cX, int cY) = _controller.Board.GetCenter();
@@ -166,10 +183,10 @@ namespace Bomb.Views
             return vec;
         }
         //
-        private void Awake()
+        private void Start()
         {
-            var poolSize = BoardManager.VirtualSize ^ 2;
-            _pool = new Pool<MassViewer>(_pref, poolSize, transform, false);
+            var poolSize = BoardManager.VirtualSize;
+            _pool = new ObjectPool<MassViewer>(_pref, poolSize, transform, false);
         }
 
 #if UNITY_EDITOR

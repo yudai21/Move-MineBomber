@@ -4,15 +4,17 @@ using TMPro;
 using Bomb.Managers;
 using Bomb.Boards.Flagged;
 using UniRx;
+using Zenject;
 
 namespace Bomb.Views
 {
     public class CountUI : MonoBehaviour
     {
-        private BoardController _boardController;
+        [Inject] private GameSceneRooter _gameSceneRooter;
+        [Inject] private BoardController _boardController;
         public TextMeshProUGUI BombValue;
 
-private void Sub()
+        private void Sub()
         {
             BombValue.SetText(_boardController.BombRemaining.ToString());
             _boardController.OnBombHit += _ =>
@@ -22,16 +24,14 @@ private void Sub()
         }
         private void Awake()
         {
-            if (GameSceneRooter.instance.GameAwaked)
+            if (_gameSceneRooter.GameAwaked)
             {
-                _boardController = GameSceneRooter.instance.Manager.Board;
                 Sub();
             }
             else
             {
-                GameSceneRooter.instance.OnGameInvoked.AsObservable().Subscribe(_ =>
+                _gameSceneRooter.OnGameInvoked.AsObservable().Subscribe(_ =>
                 {
-                    _boardController = GameSceneRooter.instance.Manager.Board;
                     Sub();
                 });
             }

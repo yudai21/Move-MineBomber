@@ -1,8 +1,10 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using Zenject;
 
 public class PauseManager : MonoBehaviour
 {
+    [Inject] private GameStateHolder _state;
     [SerializeField] private GameObject pauseCanvas;
     [SerializeField] private Button pauseButton;
 
@@ -23,12 +25,12 @@ public class PauseManager : MonoBehaviour
         if (isActive)
         {
             //Debug.Log("Active");
-            GameManager.Instance.CurrentGameState = GameState.Paused;
+            _state.UpdateState(GameState.Paused);
         }
         else
         {
             //Debug.Log("NotActive");
-            GameManager.Instance.CurrentGameState = GameState.Playing;
+            _state.UpdateState(GameState.Playing);
         }
     }
 }

@@ -1,15 +1,20 @@
 ﻿using Bomb.Datas;
+using Bomb.Repository;
 using HighElixir;
+using System;
+using UnityEngine;
+using Zenject;
 
-namespace Bomb.Boards
+namespace Bomb.Boards.Builders
 {
-    public static class BoardBuilder
+    public class BoardBuilder : IBoardBuilder
     {
+        [Inject] GameDataRepository _repo;
         // int -> 爆弾の個数
-        public static int Create(out BoardManager board, GameRule rule)
+        public int Create(out BoardManager board)
         {
             board = new BoardManager();
-            var size = rule.MapSize;
+            var size = _repo.CurrentRule.MapSize;
             board.SetBoard(new MassInfo[BoardManager.VirtualHeight, BoardManager.VirtualWidth]);
             (var x_min, var y_min) = board.GetCenter();
             var sizeDelta = size / 2;
@@ -27,18 +32,27 @@ namespace Bomb.Boards
                 }
             }
 
-            var needBomb = (int)(rule.BombRate * size * size);
+            var needBomb = (int)(_repo.CurrentRule.BombRate * size * size);
             var allMasses = board.GetAllMasses();
 
             for (int i = 0; i < needBomb; i++)
             {
                 if (allMasses.Count == 0) break;
                 int index = RandomExtensions.Rand(0, allMasses.Count);
-                var m = allMasses[index];
-                m.type &= 0;
-                m.type = (m.type & ~MassType.Empty) | MassType.Bomb;
-                board.SetMass(m.x, m.y, m);
-                allMasses.RemoveAt(index);
+                try
+                {
+                    var m = allMasses[index];
+                    m.type &= 0;
+                    m.type = (m.type & ~MassType.Empty) | MassType.Bomb;
+                    board.SetMass(m.x, m.y, m);
+                    allMasses.RemoveAt(index);
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogWarning($"index :{index}, allMass:{allMasses.Count}");
+                    Debug.LogError(ex);
+                    break;
+                }
             }
             return needBomb;
         }

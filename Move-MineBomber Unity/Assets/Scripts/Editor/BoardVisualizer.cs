@@ -29,7 +29,7 @@ public class BoardVisualizer : Editor
         var button = new Button(() =>
         {
             if (Application.isPlaying)
-                Debug.Log(_rooter.Manager.Board.Board.ToString());
+                Debug.Log(_rooter.Board.Board.ToString());
         });
         button.text = "現在のボードを出力";
         root.Add(button);

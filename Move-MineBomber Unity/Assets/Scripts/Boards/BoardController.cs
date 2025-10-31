@@ -1,16 +1,20 @@
-﻿using Bomb.Boards.Flagged;
+﻿using Bomb.Boards.Builders;
+using Bomb.Boards.Flagged;
 using Bomb.Boards.Slides;
 using Bomb.Datas;
-using Bomb.Managers;
-using Bomb.Views;
+using Bomb.Repository;
 using System;
 using System.Collections.Generic;
-using UnityEngine;
+using Zenject;
 
 namespace Bomb.Boards
 {
-    public class BoardController : IDisposable
+    public class BoardController : IDisposable, IInitializable
     {
+        [Inject] private GameStateHolder _gameStateHolder;
+        [Inject] private IBoardBuilder _boardBuilder;
+        [Inject] private GameDataRepository _repo;
+
         private BoardManager _boardManager = new();
         private FlagController _flagController;
         private MassManager _massManager;
@@ -32,20 +36,18 @@ namespace Bomb.Boards
         public event Action<BoardManager> OnBoardRebuilt;
         public event Action<List<SlideResult>> OnBoardMove; // 移動による影響を受けたマスを通知
         public event Action<bool> OnPause;
+
         public BoardController()
         {
-            _massManager = new MassManager(this);
-            _flagController = new(this);
-            _slideSystem = new(this);
+            Initialize();
         }
-
-        public void Invoke(GameRule rule)
+        public void Invoke()
         {
             // マップ構築
-            _flagController.Init((int)(rule.FlagRate * Math.Pow(rule.MapSize, 2)));
+            _flagController.Init((int)(_repo.CurrentRule.FlagRate * Math.Pow(_repo.CurrentRule.MapSize, 2)));
             OnBoardRebuilt?.Invoke(_boardManager);
-            _bombRemaining = BoardBuilder.Create(out _boardManager, rule);
-            _slideSystem.Invoke(rule);
+            _bombRemaining = _boardBuilder.Create(out _boardManager);
+            _slideSystem.Invoke(_repo.CurrentRule);
 
             //OnMassHit += m => Debug.Log($"[Board]:Hitted. info:[{m.ToString()}]");
         }
@@ -60,10 +62,10 @@ namespace Bomb.Boards
             _bombRemaining--;
             //if (BombRemaining > 0)
             //    Debug.Log($"Bomb Found: {BombRemaining}");
-            if (_bombRemaining <= 0) 
+            if (_bombRemaining <= 0)
             {
                 //Debug.Log("Game Clear");
-                GameManager.Instance.CurrentGameState = GameState.GameClear;
+                _gameStateHolder.UpdateState(GameState.GameClear);
             }
             OnBombHit?.Invoke(info);
         }
@@ -90,7 +92,14 @@ namespace Bomb.Boards
 
         public void Dispose()
         {
-            _slideSystem.Dispose();
+            _slideSystem?.Dispose();
+        }
+
+        public void Initialize()
+        {
+            _massManager = new MassManager(this);
+            _flagController = new(this);
+            _slideSystem = new(this);
         }
     }
 }

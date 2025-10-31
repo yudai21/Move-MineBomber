@@ -1,43 +1,37 @@
-﻿using UnityEngine;
+﻿using UniRx;
+using UnityEngine;
 using UnityEngine.SceneManagement;
+using Zenject;
 
 public class GameEndJudgement : MonoBehaviour
 {
-    private bool _IssStartChange = false;
+    [Inject] private GameStateHolder _gameState;
 
-    void Start()
+    private void Start()
     {
-        _IssStartChange = false;
-    }
-
-    void Update()
-    {
-        switch (GameManager.Instance.currentGameState)
+        _gameState.Observable.Subscribe(x =>
         {
-            case GameState.GameClear:
-                ClearSceneLoad();
-                //Debug.Log("<color=Green>クリア判定</color>");
-                break;
-            case GameState.GameOver:
-                GameOverSceneLoad();
-                //Debug.Log("<color=Red>ゲームオーバー判定</color>");
-                break;
-            default:
-                //Debug.Log("<color=Yellow>どちらでもない</color> 現在→"+ GameManager.Instance.currentGameState);
-                break;
-        }
+            switch (x)
+            {
+                case GameState.GameClear:
+                    ClearSceneLoad();
+                    break;
+                case GameState.GameOver:
+                    GameOverSceneLoad();
+                    break;
+                default:
+                    break;
+            };
+        });
     }
+
     void ClearSceneLoad()
     {
-        if (_IssStartChange) return;
         SceneManager.LoadSceneAsync("GameClear");
-        _IssStartChange = true;
     }
 
     void GameOverSceneLoad()
     {
-        if (_IssStartChange) return;
         SceneManager.LoadSceneAsync("GameOver");
-        _IssStartChange = true;
     }
 }

@@ -45,7 +45,7 @@ namespace Bomb.Boards.Slides
 
         public void Dispose()
         {
-            GlobalTimer.Update.Unregister(_timerTicket);
+            GlobalTimer.Update.UnRegister(_timerTicket);
         }
 
         private void OnPulse()
