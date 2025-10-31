@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace HighElixir.UI.Countable
+namespace HighElixir.Unity.UI.Countable
 {
     public class HedgeSum
     {

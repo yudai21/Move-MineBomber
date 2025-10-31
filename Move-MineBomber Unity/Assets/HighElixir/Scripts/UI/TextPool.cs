@@ -1,32 +1,20 @@
 ﻿using TMPro;
 using UnityEngine;
 
-namespace HighElixir.Pool
+namespace HighElixir.Unity.Pools.UI
 {
     public class TextPool : MonoBehaviour
     {
         [Header("Pool")]
         [SerializeField] private TMP_Text _prefab;
         [SerializeField] private int _size;
-        private Pool<TMP_Text> _textPool;
-        public Pool<TMP_Text> Pool
-        {
-            get
-            {
-                if (_textPool == null) Create();
-                return _textPool;
-
-            }
-        }
-
+        private RectTransform _container;
+        private ObjectPool<TMP_Text> _textPool;
+        public ObjectPool<TMP_Text> Pool => _textPool;
         private void Awake()
         {
-            Create();
-        }
-
-        private void Create()
-        {
-            _textPool = new Pool<TMP_Text>(_prefab, _size, transform); ;
+            _container = GetComponent<RectTransform>();
+            _textPool = new ObjectPool<TMP_Text>(_prefab, _size, _container);
         }
     }
 }

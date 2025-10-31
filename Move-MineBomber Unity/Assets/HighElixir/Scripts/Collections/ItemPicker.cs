@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace HighElixir
+namespace HighElixir.Collections
 {
     /// <summary>
     /// リスト操作、要素の取得に関するヘルパークラス。
@@ -15,14 +14,11 @@ namespace HighElixir
         /// <typeparam name="T">リストの要素の型。</typeparam>
         /// <param name="values">要素を持つリスト。</param>
         /// <returns>ランダムに選ばれた要素。リストが空またはnullの場合はデフォルト値を返す。</returns>
-        public static T RandomPick<T>(this IEnumerable<T> source)
+        public static T RandomPick<T>(this List<T> values)
         {
-            if (source == null) return default;
-            var list = source as IList<T> ?? source.ToList();
-            if (list.Count == 0) return default;
-            return list[RandomExtensions.Rand(0, list.Count)];
+            if (values == null || values.Count == 0) return default;
+            return values[RandomExtensions.Rand(0, values.Count)];
         }
-
 
         public static T RandomPick<T>(this List<T> values, HashSet<T> exists)
         {
@@ -30,7 +26,7 @@ namespace HighElixir
             List<T> v = values.Where(item => !exists.Contains(item)).ToList();
             // もし未使用の要素がない場合は、デフォルト値を返す。
             if (v.Count == 0) return default;
-            return ItemPicker.RandomPick(v);
+            return RandomPick(v);
         }
 
         public static bool TryPickUnUsed<T>(this List<T> values, HashSet<T> exists, out T result)
@@ -46,7 +42,7 @@ namespace HighElixir
         /// 特定の大きさを超過したアイテムをすべて返す.
         /// </summary>
         /// <param name="allowSize">許可されるリストの大きさ</param>
-        /// <param name="res"><ass cref="allowSize">allowSize</cref>を超過したアイテム</param>
+        /// <param name="res">最大許容量を超過したアイテム</param>
         /// <returns>超過していたかどうか</returns>
         public static bool TryGetOverItem<T>(this List<T> list, int allowSize, out List<T> res)
         {
@@ -59,6 +55,7 @@ namespace HighElixir
                 {
                     res.Add(list[index - i]);
                 }
+                res.Reverse();
                 return true;
             }
             return false;

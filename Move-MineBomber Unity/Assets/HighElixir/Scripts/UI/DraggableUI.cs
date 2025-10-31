@@ -2,7 +2,7 @@
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
 
-namespace HighElixir.UI
+namespace HighElixir.Unity.UI
 {
     public class DraggableUI : MonoBehaviour,
         IDragHandler,

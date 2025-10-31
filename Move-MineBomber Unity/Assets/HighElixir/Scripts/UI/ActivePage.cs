@@ -1,8 +1,8 @@
-﻿using HighElixir.UI.Countable;
+﻿using HighElixir.Unity.UI.Countable;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
-namespace HighElixir.UI
+namespace HighElixir.Unity.UI
 {
     /// <summary>
     /// カウンタブルに追加できる。自動でpageの数で範囲を制限する
@@ -33,9 +33,9 @@ namespace HighElixir.UI
         private void Awake()
         {
             _countable = GetComponent<CountableSwitch>();
-            _countable.OnChanged.AddListener(s =>
+            _countable.OnValueChanged.AddListener(s =>
             {
-                var page = s;
+                var page = s.NewValue;
                 for (int i = 0; i < _pages.Count; i++)
                 {
                     if (i + 1 == page)
