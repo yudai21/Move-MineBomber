@@ -13,10 +13,16 @@ namespace HighElixir
             new ThreadLocal<Random>(() => new Random(Interlocked.Increment(ref _seed)));
 
         public static Random Instance => _local.Value;
+
+        public static void SetSeed(int seed) => _seed = seed;
     }
 
     public static class RandomExtensions
     {
+        public static void SetSeed(int seed)
+        {
+            RandomProvider.SetSeed(seed);
+        }
         /// <summary>
         /// 確率[0,1]で true。RNG を明示注入する版。
         /// </summary>
@@ -65,5 +71,18 @@ namespace HighElixir
             return u * (max - min) + min;                  // [min, max)
         }
         public static float Rand(float min, float max) => (float)Rand((double)min, (double)max);
+
+        public static int NextOne()
+        {
+            var i = RandomProvider.Instance.Next(99);
+            if (i > 66) return -1;
+            if (i > 33) return 1;
+            return 0;
+        }
+
+        public static bool NextBool()
+        {
+            return RandomProvider.Instance.Next(2) == 0;
+        }
     }
 }
